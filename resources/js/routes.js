@@ -2,6 +2,10 @@
  * Import Route Aplikasi
  */
 import ProfilesRoutes from './profiles/routes'
+import DocumentsRoutes from './documents/routes'
+import UsersRoutes from './users/routes'
+import TagsRoutes from './tags/routes'
+
 const routes = []
 
 /**
@@ -16,7 +20,9 @@ let notFoundPage = { path: '*', component: require('./components/NotFound.vue').
  */
 routes.push(
     ...ProfilesRoutes,
-
+    ...DocumentsRoutes,
+    ...UsersRoutes,
+    ...TagsRoutes,
 
     notFoundPage,
 )

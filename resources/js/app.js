@@ -8,6 +8,9 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import Swal from 'sweetalert2'
+window.Swal = Swal;
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -20,12 +23,23 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('data-viewer', require('./components/DataViewer.vue').default);
+
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+
+import VueProgressBar from 'vue-progressbar'
+
+Vue.use(VueProgressBar, {
+    color: 'rgb(143, 255, 199)',
+    failedColor: 'red',
+    height: '3px'
+})
 
 import VueRouter from 'vue-router'
 import Routes from './routes'
@@ -37,7 +51,29 @@ const router = new VueRouter({
     linkActiveClass: 'active'
 })
 
+
 const app = new Vue({
     el: '#app',
-    router
+    router,
+    created() {
+        console.log('cek')
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        console.log('Bootstrap will handle incomplete form fields');
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    },
+    mounted() {
+
+    }
 });

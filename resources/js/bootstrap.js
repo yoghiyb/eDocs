@@ -1,4 +1,5 @@
 window._ = require('lodash');
+window.BASE_URL = 'http://127.0.0.1:8000/api'
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

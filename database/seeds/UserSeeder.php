@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'role' => 1,
             'username' => 'yoghiyb',
+            'photo' => 'profile.png',
             'email' => 'yoghiyb@gmail.com',
             'password' => Hash::make('12345678'),
             'api_token' => Str::random(60),
@@ -29,6 +30,7 @@ class UserSeeder extends Seeder
             DB::table('users')->insert([
                 'role' => rand(2, 3),
                 'username' => $faker->name,
+                'photo' => 'profile.png',
                 'email' => $faker->email,
                 'password' => Hash::make('12345678'),
                 'api_token' => Str::random(60),

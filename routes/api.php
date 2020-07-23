@@ -23,7 +23,23 @@ $protect = [
 ];
 
 Route::group($protect, function () {
-    Route::get('test', function (Request $request) {
-        return response()->json(['success' => $request->user()]);
+
+    Route::resource('user', 'Api\UserController');
+    Route::patch('user/cp/{id}', 'Api\UserController@passwordReset');
+
+    Route::group(['middleware' => 'admin'], function () {
+        Route::get('tag', function (Request $request) {
+            return response()->json($request->user(), 200);
+        });
+
+        Route::get('users/all', 'Api\UserController@allUsers');
+
+        Route::resource('tag', 'Api\TagController')->except(['create', 'show']);
+    });
+
+    Route::group(['middleware' => 'adminOrManager'], function () {
+        Route::get('approve', function (Request $request) {
+            return response()->json($request->user(), 200);
+        });
     });
 });

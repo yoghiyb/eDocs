@@ -5,10 +5,15 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Helper\DataViewer;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, DataViewer;
+
+    public static $columns = [
+        'role', 'dept_id', 'email', 'username'
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -16,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'dept_id',
+        'name', 'email', 'password', 'role', 'dept_id', 'photo'
     ];
 
     /**

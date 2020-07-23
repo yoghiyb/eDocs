@@ -26,6 +26,8 @@
         "@fortawesome/fontawesome-free": "^5.14.0",
         "admin-lte": "^3.0.5",
         "cross-env": "^7.0.2",
+        "sweetalert2": "^9.17.0",
+        "vue-progressbar": "^0.7.5",
         "vue-router": "^3.3.4"
     }
 }
