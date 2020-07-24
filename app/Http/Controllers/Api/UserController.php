@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -76,8 +77,9 @@ class UserController extends Controller
 
     public function passwordReset(Request $request, $id)
     {
+
         $validator = Validator::make($request->all(), [
-            'old' => 'required|min:8',
+            'old' => 'required_unless:role,1,min:8',
             'new' => 'required|min:8'
         ]);
 
@@ -86,13 +88,67 @@ class UserController extends Controller
         }
 
         try {
-            if (Hash::check($request->old, auth()->user()->password)) {
-                $newPass = ['password' => Hash::make($request->new)];
+            $newPass = ['password' => Hash::make($request->new)];
+            if ($request->role == 1) {
                 User::where('id', $id)->update($newPass);
-                return response()->json(['success' => 'pasword berhasil diubah'], 200);
-            };
+                return response()->json(['success' => 'password berhasil diubah'], 200);
+            } else {
+                if (Hash::check($request->old, auth()->user()->password)) {
+
+                    User::where('id', $id)->update($newPass);
+                    return response()->json(['success' => 'pasword berhasil diubah'], 200);
+                };
+            }
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 400);
         }
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users',
+            'role' => 'required|integer',
+            'dept_id' => 'nullable|integer',
+            'password' => 'required|string|min:8'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->messages());
+        }
+
+        try {
+            $user = $request->all();
+            $user['photo'] = 'profile.png';
+            $user['password'] = Hash::make($request->password);
+            $user['api_token'] = Str::random(60);
+
+            User::create($user);
+        } catch (\Throwable $th) {
+            return response()->json($th->getMessage());
+        }
+        return response()->json(['success' => $user], 200);
+    }
+
+    public function edit($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()]);
+        }
+        return response()->json($user, 200);
+    }
+
+    public function destroy($id)
+    {
+        try {
+            User::where('id', $id)->delete();
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()]);
+        }
+
+        return response()->json(['success' => 'user berhasil dhapus']);
     }
 }

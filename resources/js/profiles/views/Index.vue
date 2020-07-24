@@ -110,6 +110,7 @@
                       id="photo"
                       required
                       @change="updatePhoto"
+                      accept="image/*"
                     />
                     <label
                       class="custom-file-label"
@@ -300,6 +301,7 @@ export default {
       });
     },
     async changePassword() {
+      this.$Progress.start();
       try {
         let endpoint = `${BASE_URL}/user/cp/${this.user.id}`;
         let response = await axios.patch(endpoint, this.pass);
@@ -309,8 +311,13 @@ export default {
           Swal.fire("Berhasil!", "Password berhasil diubah.", "success");
           this.pass.old = "";
           this.pass.new = "";
+          this.$Progress.finish();
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+        Swal.fire("Gagal!", "Profile gagal diperbaruhi.", "error");
+        this.$Progress.fail();
+      }
     },
     updatePhoto(e) {
       this.user.photo = e.target.files[0];

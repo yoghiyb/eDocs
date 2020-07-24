@@ -20,6 +20,16 @@ class TagController extends Controller
         ]);
     }
 
+    public function getAllTag()
+    {
+        try {
+            $tag = Tag::get();
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()]);
+        }
+        return response()->json($tag, 200);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

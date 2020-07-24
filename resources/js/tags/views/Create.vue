@@ -1,12 +1,15 @@
 <template>
   <div class="col-sm-12">
     <section class="content-header" style="margin-bottom: 25px;">
-      <h1>Create New Tag</h1>
+      <div class="row">
+        <h1 class="col-md-11">Create New Tag</h1>
+        <button class="col-md-1 col-sm-2 btn btn-primary" @click="goToIndexTag()">Back</button>
+      </div>
     </section>
 
     <div class="card">
       <div class="card-body">
-        <form class="needs-validation" novalidate>
+        <form class="needs-validation" novalidate onsubmit="return false">
           <div class="form-group row">
             <label for="name" class="col-sm-2 col-form-label">Tag Name</label>
             <div class="col-sm-10">
@@ -17,6 +20,7 @@
                 placeholder="name"
                 required
                 v-model="name"
+                @keyup.enter="confirmCreateTag()"
               />
               <div class="invalid-feedback">nama tag tidak boleh kosong!</div>
             </div>

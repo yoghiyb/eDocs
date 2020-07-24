@@ -65,7 +65,11 @@
                 <tr v-for="(row,index) in model.data" :key="index">
                   <td v-for="(val, key) in row" v-if="matchingColumns(key)" :key="key">{{val}}</td>
                   <td v-if="hasAction">
-                    <button class="btn btn-sm btn-primary" v-if="canEdit">Edit</button>
+                    <button
+                      class="btn btn-sm btn-primary"
+                      v-if="canEdit"
+                      @click="goToEdit(row.id)"
+                    >Edit</button>
                     <button
                       class="btn btn-sm btn-danger"
                       v-if="canDelete"
@@ -136,7 +140,15 @@
 
 <script>
 export default {
-  props: ["source", "column", "canEdit", "canDelete", "hasAction"],
+  props: [
+    "source",
+    "column",
+    "canEdit",
+    "canDelete",
+    "hasAction",
+    "editPath",
+    "deleteSource",
+  ],
   data() {
     return {
       model: {},
@@ -236,7 +248,7 @@ export default {
     async delete(id) {
       this.$Progress.start();
       try {
-        let endpoint = `${BASE_URL}/${this.source}/${id}`;
+        let endpoint = `${BASE_URL}/${this.deleteSource}/${id}`;
         let response = await axios.delete(endpoint);
 
         if (response.status == 200) {
@@ -249,6 +261,12 @@ export default {
         Swal.fire("Gagal!", "Data gagal dihapus.", "error");
         this.$Progress.fail();
       }
+    },
+    goToEdit(id) {
+      this.$router.push({
+        name: this.editPath,
+        params: { id },
+      });
     },
   },
 };

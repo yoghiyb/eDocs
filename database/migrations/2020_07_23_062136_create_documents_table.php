@@ -19,12 +19,14 @@ class CreateDocumentsTable extends Migration
             $table->string('file');
             $table->integer('created_by');
             $table->string('status');
+            $table->text('description');
             $table->timestamps();
         });
 
         Schema::create('documents_tags', function (Blueprint $table) {
-            $table->integer('document_id');
-            $table->integer('tag_id');
+            $table->bigInteger('document_id');
+            $table->bigInteger('tag_id');
+            $table->timestamps();
         });
     }
 

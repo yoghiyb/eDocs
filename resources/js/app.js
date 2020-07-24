@@ -11,6 +11,8 @@ window.Vue = require('vue');
 import Swal from 'sweetalert2'
 window.Swal = Swal;
 
+import Multiselect from 'vue-multiselect'
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -24,8 +26,7 @@ window.Swal = Swal;
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('data-viewer', require('./components/DataViewer.vue').default);
-
-
+Vue.component('multiselect', Multiselect);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -43,6 +44,7 @@ Vue.use(VueProgressBar, {
 
 import VueRouter from 'vue-router'
 import Routes from './routes'
+import Axios from 'axios';
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -55,6 +57,9 @@ const router = new VueRouter({
 const app = new Vue({
     el: '#app',
     router,
+    data: {
+        authUser: ''
+    },
     created() {
         console.log('cek')
         window.addEventListener('load', function () {
@@ -72,8 +77,21 @@ const app = new Vue({
                 }, false);
             });
         }, false);
+        this.getAuthUser()
     },
     mounted() {
 
+    },
+    methods: {
+        async getAuthUser() {
+            let endpoint = `${BASE_URL}/user`
+            axios.get(endpoint)
+                .then(response => {
+                    if (response.status === 200) {
+                        this.authUser = response.data
+                    }
+                })
+                .catch(error => console.log(error));
+        }
     }
 });

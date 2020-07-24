@@ -21,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'dept_id', 'photo'
+        'username', 'email', 'password', 'role', 'dept_id', 'photo', 'api_token'
     ];
 
     /**
@@ -41,4 +41,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function documents()
+    {
+        return $this->hasMany('App\Document', 'id', 'created_by');
+    }
 }

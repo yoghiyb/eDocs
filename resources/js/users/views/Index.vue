@@ -13,6 +13,8 @@
       :hasAction="true"
       :canEdit="true"
       :canDelete="true"
+      editPath="UserEdit"
+      deleteSource="user"
     />
   </div>
 </template>

@@ -24,8 +24,14 @@ $protect = [
 
 Route::group($protect, function () {
 
-    Route::resource('user', 'Api\UserController');
+    Route::resource('user', 'Api\UserController')->except(['show']);
     Route::patch('user/cp/{id}', 'Api\UserController@passwordReset');
+
+    //get all tag
+    Route::get('tag/all', 'Api\TagController@getAllTag');
+    Route::post('document/upload', 'Api\DocumentController@store');
+    Route::get('document', 'Api\DocumentController@index');
+    Route::get('tests3/{file}', 'Api\DocumentController@show');
 
     Route::group(['middleware' => 'admin'], function () {
         Route::get('tag', function (Request $request) {
