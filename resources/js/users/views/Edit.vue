@@ -79,8 +79,9 @@
                   <div class="col-sm-10">
                     <select class="form-control" id="role" required v-model="user.role">
                       <option value>Pilih Role</option>
-                      <option value="1">Admin</option>
+                      <option v-if="$root.$data.authUser.role === '1'" value="1">Admin</option>
                       <option value="2">Manager</option>
+                      <option value="3">Staff</option>
                     </select>
                     <div class="invalid-feedback">role tidak boleh kosong!</div>
                   </div>

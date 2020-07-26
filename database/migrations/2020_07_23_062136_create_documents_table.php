@@ -19,7 +19,10 @@ class CreateDocumentsTable extends Migration
             $table->string('file');
             $table->integer('created_by');
             $table->string('status');
+            $table->bigInteger('approved_by')->nullable();
+            $table->timestamp('approved_at')->nullable();
             $table->text('description');
+            // $table->bigInteger('comment_id')->nullable();
             $table->timestamps();
         });
 

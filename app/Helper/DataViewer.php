@@ -31,7 +31,8 @@ trait DataViewer
             'per_page' => 'integer|min:1',
             'search_column' => 'required|alpha_dash|in:' . implode(',', self::$columns),
             'search_operator' => 'required|alpha_dash|in:' . implode(',', array_keys($this->operators)),
-            'search_input' => 'max:255'
+            'search_input' => 'max:255',
+            // 'status' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +48,6 @@ trait DataViewer
                     } else if ($request->search_operator == 'like') {
                         $query->where($request->search_column, 'LIKE', '%' . $request->search_input . '%');
                     } else {
-                        // $query->where('username', "=", "yoghiyb");
                         $query->where($request->search_column, $this->operators[$request->search_operator], $request->search_input);
                     }
                 }

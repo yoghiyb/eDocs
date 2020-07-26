@@ -33,149 +33,173 @@
           </ul>
         </div>
       </div>
-      <div class="tab-content" id="myTabContent">
+      <div class="tab-content mt-3" id="myTabContent">
         <div
-          class="tab-pane fade mt-3 active show"
+          class="tab-pane fade active show"
           id="profile"
           role="tabpanel"
           aria-labelledby="profile-tab"
         >
-          <div class="container-fluid">
-            <form class="needs-validation" novalidate>
-              <div class="form-group row">
-                <label for="username" class="col-sm-2 col-form-label">Username</label>
-                <div class="col-sm-10">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="username"
-                    placeholder="Username"
-                    required
-                    v-model="user.username"
-                  />
-                  <div class="invalid-feedback">username tidak boleh kosong!</div>
+          <div class="card">
+            <div class="card-body">
+              <form class="needs-validation" novalidate>
+                <div class="form-group row">
+                  <label for="username" class="col-sm-2 col-form-label">Username</label>
+                  <div class="col-sm-10">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="username"
+                      placeholder="Username"
+                      required
+                      v-model="user.username"
+                    />
+                    <div class="invalid-feedback">username tidak boleh kosong!</div>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="email" class="col-sm-2 col-form-label">Email</label>
-                <div class="col-sm-10">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="email"
-                    placeholder="email"
-                    required
-                    v-model="user.email"
-                  />
-                  <div class="invalid-feedback">Email tidak boleh kosong!</div>
+                <div class="form-group row">
+                  <label for="email" class="col-sm-2 col-form-label">Email</label>
+                  <div class="col-sm-10">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="email"
+                      placeholder="email"
+                      required
+                      v-model="user.email"
+                    />
+                    <div class="invalid-feedback">Email tidak boleh kosong!</div>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="role" class="col-sm-2 col-from-label">Role</label>
-                <div class="col-sm-10">
-                  <select class="form-control" id="role" required v-model="user.role">
+                <div class="form-group row">
+                  <label for="role" class="col-sm-2 col-from-label">Role</label>
+                  <div class="col-sm-10">
+                    <p
+                      class="form-control"
+                    >{{ user && user.id == '1' ? 'Admin' : user.id == '2' ? 'Manager' : 'Staff'}}</p>
+                    <!-- <select class="form-control" id="role" required v-model="user.role" disabled>
                     <option value>Pilih Role</option>
                     <option value="1">Admin</option>
                     <option value="2">Manager</option>
+                    <option value="3">Staff</option>
                   </select>
-                  <div class="invalid-feedback">Role tidak boleh kosong!</div>
+                    <div class="invalid-feedback">Role tidak boleh kosong!</div>-->
+                  </div>
                 </div>
-              </div>
-              <div class="form-group row" v-if="user.role != '1'">
-                <label for="dept" class="col-sm-2 col-from-label">Departement</label>
-                <div class="col-sm-10">
-                  <select
+                <div
+                  class="form-group row"
+                  v-if="user.role != '1' &&  $root.$data.authUser.role !== '3'"
+                >
+                  <label for="dept" class="col-sm-2 col-from-label">Departement</label>
+                  <div class="col-sm-10">
+                    <p
+                      class="form-control"
+                    >{{ user && user.dept == '1' ? 'Departement 1' : 'Departement 2' }}</p>
+                    <!-- <select
                     class="form-control"
                     id="dept"
                     v-model="user.dept_id"
                     :required="user.role != '1'"
+                    disabled
                   >
                     <option value>Pilih Departement</option>
                     <option value="1">Departement 1</option>
                     <option value="2">Departement 2</option>
-                  </select>
-                  <div class="invalid-feedback">departement tidak boleh kosong!</div>
-                </div>
-              </div>
-              <div class="form-group row">
-                <div class="col-sm-2">
-                  <img :src="user.photo" alt="Photo profile" />
-                </div>
-                <div class="col-sm-10">
-                  <label for="photo">Photo</label>
-                  <div class="custom-file">
-                    <input
-                      type="file"
-                      class="custom-file-input"
-                      id="photo"
-                      required
-                      @change="updatePhoto"
-                      accept="image/*"
-                    />
-                    <label
-                      class="custom-file-label"
-                      for="photo"
-                    >{{ user.photo.name ? user.photo.name : 'Choose file...' }}</label>
-                    <div class="invalid-feedback">Example invalid custom file feedback</div>
+                    </select>-->
+                    <div class="invalid-feedback">departement tidak boleh kosong!</div>
                   </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="dept" class="col-sm-2 col-from-label"></label>
-                <div class="col-sm-10">
+                <div class="form-group row">
+                  <div class="col-sm-2">
+                    <img
+                      :src="[user.photo == 'profile.png' ? './img/' + user.photo : newPhoto != '' ? newPhoto : './storage/images/' + user.photo ]"
+                      alt="Photo profile"
+                      width="150px"
+                    />
+                  </div>
+                  <div class="col-sm-10">
+                    <label for="photo">Photo</label>
+                    <div class="custom-file">
+                      <input
+                        type="file"
+                        class="custom-file-input"
+                        id="photo"
+                        required
+                        @change="updatePhoto"
+                        accept="image/*"
+                      />
+                      <label
+                        class="custom-file-label"
+                        for="photo"
+                      >{{ user && user.photo && user.photo.name ? user.photo.name : 'Choose file...' }}</label>
+                      <div class="invalid-feedback">Example invalid custom file feedback</div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-primary mt-3"
+                      @click="updateConfirmation"
+                    >Update Profile</button>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="dept" class="col-sm-2 col-from-label"></label>
+                  <!-- <div class="col-sm-10">
                   <button
                     type="button"
                     class="btn btn-primary"
                     @click="updateConfirmation"
                   >Update Profile</button>
+                  </div>-->
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
         <div
-          class="tab-pane fade mt-3"
+          class="tab-pane fade"
           id="change-password"
           role="tabpanel"
           aria-labelledby="change-password-tab"
         >
-          <div class="container-fluid">
-            <form>
-              <div class="form-group row">
-                <label for="oldPassword" class="col-sm-2 col-form-label">Old Password</label>
-                <div class="col-sm-10">
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="oldPassword"
-                    placeholder="Confirm Password"
-                    v-model="pass.old"
-                  />
+          <div class="card">
+            <div class="card-body">
+              <form>
+                <div class="form-group row">
+                  <label for="oldPassword" class="col-sm-2 col-form-label">Old Password</label>
+                  <div class="col-sm-10">
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="oldPassword"
+                      placeholder="Confirm Password"
+                      v-model="pass.old"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="newPassword" class="col-sm-2 col-form-label">New Password</label>
-                <div class="col-sm-10">
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="newPassword"
-                    placeholder="New Password"
-                    v-model="pass.new"
-                  />
+                <div class="form-group row">
+                  <label for="newPassword" class="col-sm-2 col-form-label">New Password</label>
+                  <div class="col-sm-10">
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="newPassword"
+                      placeholder="New Password"
+                      v-model="pass.new"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="dept" class="col-sm-2 col-from-label"></label>
-                <div class="col-sm-10">
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    @click="confirmChangePassword"
-                  >Change Password</button>
+                <div class="form-group row">
+                  <label for="dept" class="col-sm-2 col-from-label"></label>
+                  <div class="col-sm-10">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      @click="confirmChangePassword"
+                    >Change Password</button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -197,6 +221,7 @@ export default {
           name: "",
         },
       },
+      newPhoto: "",
       pass: {
         old: "",
         new: "",
@@ -321,6 +346,7 @@ export default {
     },
     updatePhoto(e) {
       this.user.photo = e.target.files[0];
+      this.newPhoto = URL.createObjectURL(e.target.files[0]);
       console.log(this.user.photo);
     },
   },

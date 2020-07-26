@@ -30,7 +30,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
             <!-- SEARCH FORM -->
-            <div class="form-inline ml-3">
+            <!-- <div class="form-inline ml-3">
                 <div class="input-group input-group-sm">
                     <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
                     <div class="input-group-append">
@@ -39,7 +39,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
         </nav>
         <!-- /.navbar -->
@@ -48,7 +48,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <router-link to="/dashboard" class="brand-link">
-                <img src="./img/logo.png" alt="AppInterview Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <img src="/img/logo.png" alt="AppInterview Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">E-Docs</span>
             </router-link>
 
@@ -57,7 +57,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img src="./img/profile.png" class="img-circle elevation-2" alt="User Image">
+                        <img :src="[$root.$data.authUser.photo == 'profile.png' ? '/img/'+$root.$data.authUser.photo : '/storage/images/' + $root.$data.authUser.photo]" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
                         <a href="#" class="d-block">
@@ -72,15 +72,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <router-link to="/documents" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt color-blue"></i>
+                                <i class="nav-icon fas fa-folder-open"></i>
                                 <p>
                                     Documents
                                 </p>
                             </router-link>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" v-if="authUser.role == '1'">
                             <router-link to="/tag" class="nav-link">
-                                <i class="nav-icon fas fa-user color-orange"></i>
+                                <i class="nav-icon fas fa-tags"></i>
                                 <p>
                                     Tags
                                 </p>
@@ -88,7 +88,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </li>
                         <li class="nav-item">
                             <router-link to="/user" class="nav-link">
-                                <i class="nav-icon fas fa-user color-orange"></i>
+                                <i class="nav-icon fas fa-users"></i>
                                 <p>
                                     User
                                 </p>

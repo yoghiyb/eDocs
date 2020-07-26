@@ -46,4 +46,14 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Document', 'id', 'created_by');
     }
+
+    public function approved_by_user()
+    {
+        return $this->hasOne('App\Document', 'id', 'approved_by');
+    }
+
+    public function comment()
+    {
+        return $this->hasMany('App\Comment',  'id', ['from_id', 'to_id']);
+    }
 }

@@ -27,6 +27,7 @@ import Multiselect from 'vue-multiselect'
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('data-viewer', require('./components/DataViewer.vue').default);
 Vue.component('multiselect', Multiselect);
+Vue.component('comment', require('./components/CommentComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -45,6 +46,7 @@ Vue.use(VueProgressBar, {
 import VueRouter from 'vue-router'
 import Routes from './routes'
 import Axios from 'axios';
+import { reject } from 'lodash';
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -60,7 +62,7 @@ const app = new Vue({
     data: {
         authUser: ''
     },
-    created() {
+    async created() {
         console.log('cek')
         window.addEventListener('load', function () {
             // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -77,7 +79,7 @@ const app = new Vue({
                 }, false);
             });
         }, false);
-        this.getAuthUser()
+        await this.getAuthUser()
     },
     mounted() {
 
@@ -92,6 +94,6 @@ const app = new Vue({
                     }
                 })
                 .catch(error => console.log(error));
-        }
-    }
+        },
+    },
 });

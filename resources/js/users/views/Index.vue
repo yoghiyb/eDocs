@@ -10,11 +10,13 @@
     <data-viewer
       source="users/all"
       column="username"
+      :showDetail="true"
+      detailPath="UserDetail"
       :hasAction="true"
-      :canEdit="true"
-      :canDelete="true"
-      editPath="UserEdit"
-      deleteSource="user"
+      :canEdit="$root.$data.authUser.role === '1' ? true : false"
+      :canDelete="$root.$data.authUser.role === '1' ? true : false"
+      :editPath="$root.$data.authUser.role === '1' && 'UserEdit'"
+      :deleteSource="$root.$data.authUser.role !== '1' && 'user'"
     />
   </div>
 </template>

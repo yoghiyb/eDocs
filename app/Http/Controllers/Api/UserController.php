@@ -16,10 +16,21 @@ class UserController extends Controller
     {
         try {
             $user = $request->user();
-            $user['photo'] = Storage::url('app/public/images/' . $user->photo);
+            // $user['photo'] = Storage::url('app/public/images/' . $user->photo);
             return response()->json($user);
         } catch (\Throwable $th) {
             return response()->json(['error' => 'User tidak ditemukan']);
+        }
+    }
+
+    public function userPhoto($id)
+    {
+        try {
+            $user = User::findOrfail($id);
+
+            return response()->json($user['photo'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => 'gagal ambil foto']);
         }
     }
 
@@ -51,9 +62,13 @@ class UserController extends Controller
 
             $photo = null;
 
-            $user = $request->except('_method');
+            $user = $request->except('_method', 'created_at', 'updated_at', 'email_verified_at');
 
             $oldUser = User::findOrFail($id);
+
+            if ($request->photo == '') {
+                $user = $request->except('_method', 'photo', 'created_at', 'updated_at', 'email_verified_at');
+            }
 
             if ($request->hasFile('photo')) {
 
@@ -68,7 +83,7 @@ class UserController extends Controller
 
             User::where('id', $id)->update($user);
         } catch (\Throwable $th) {
-            return response()->json(['error' => 'profile gagal diperbarui' . $th]);
+            return response()->json(['error' => 'profile gagal diperbarui ' . $th->getMessage()]);
         }
         return response()->json(['success' => 'profile diperbarui'], 200);
     }

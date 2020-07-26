@@ -60,4 +60,17 @@ class TagController extends Controller
         }
         return response()->json(['success' => 'tag berhasil dihapus'], 200);
     }
+
+    public function show($id)
+    {
+        $tag = Tag::findOrFail($id);
+        // $tag->documents_tags;
+
+        $tag['document_tags'] = collect($tag->documents_tags)->map(function ($data) {
+            $data->document;
+            $data->tag;
+            return $data;
+        });
+        return response()->json($tag);
+    }
 }

@@ -56,7 +56,7 @@
                       <span v-else>&darr;</span>
                     </span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" v-if="hasAction">
                     <span>Action</span>
                   </th>
                 </tr>
@@ -65,6 +65,11 @@
                 <tr v-for="(row,index) in model.data" :key="index">
                   <td v-for="(val, key) in row" v-if="matchingColumns(key)" :key="key">{{val}}</td>
                   <td v-if="hasAction">
+                    <button
+                      class="btn btn-sm btn-warning"
+                      v-if="showDetail"
+                      @click="goToDetail(row.id)"
+                    >Detail</button>
                     <button
                       class="btn btn-sm btn-primary"
                       v-if="canEdit"
@@ -145,8 +150,10 @@ export default {
     "column",
     "canEdit",
     "canDelete",
+    "showDetail",
     "hasAction",
     "editPath",
+    "detailPath",
     "deleteSource",
   ],
   data() {
@@ -175,8 +182,9 @@ export default {
     };
   },
   created() {
-    this.fetchIndexData();
-    console.log(this.canEdit, this.canDelete);
+    if (this.source && this.source != "") {
+      this.fetchIndexData();
+    }
   },
   methods: {
     next() {
@@ -268,9 +276,25 @@ export default {
         params: { id },
       });
     },
+    goToDetail(id) {
+      this.$router.push({
+        name: this.detailPath,
+        params: { id },
+      });
+    },
+    goToDetail(id) {
+      console.log("ke halaman show", id);
+      this.$router.push({
+        name: this.detailPath,
+        params: { id },
+      });
+    },
   },
 };
 </script>
 
-<style>
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
 </style>
