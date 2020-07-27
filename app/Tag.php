@@ -21,4 +21,9 @@ class Tag extends Model
     {
         return $this->hasMany('App\DocumentTag');
     }
+
+    // public function documents_tags()
+    // {
+    //     return $this->belongsTo('App\DocumentTag', 'id', 'tag_id');
+    // }
 }

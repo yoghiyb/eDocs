@@ -42,7 +42,42 @@
         >
           <div class="card">
             <div class="card-body">
-              <form class="needs-validation" novalidate>
+              <div v-if="!isEdit" class="row">
+                <div class="col-md-4 col-sm-12">
+                  <img
+                    :src="[$root.$data.authUser.photo == 'profile.png' ? './img/' + $root.$data.authUser.photo : '/storage/images/' + $root.$data.authUser.photo]"
+                    alt="Photo profile"
+                    width="150px"
+                  />
+                </div>
+                <div class="col-md-8 col-sm-12">
+                  <div class="form-group">
+                    <label for>Name</label>
+                    <p>
+                      {{user &&user.username }}
+                      <span
+                        class="badge"
+                        :class="[user && user.role == '1' ? 'badge-success' : user.role == '2' ? 'badge-warning' : 'badge-primary']"
+                      >{{user && user.role == '1' ? 'ADMIN' : user.role == '2' ? 'MANAGER' : 'STAFF' }}</span>
+                      <span
+                        v-if="user.dept_id != ''"
+                        class="badge ml-1"
+                        :class="[user && user.role == '1' ? 'badge-success' : user.role == '2' ? 'badge-warning' : 'badge-primary']"
+                      >{{user && user.dept_id == '1' ? 'Departement 1' : 'Departement 2'}}</span>
+                    </p>
+                  </div>
+                  <div class="form-group">
+                    <label for>Email</label>
+                    <p>{{user && user.email}}</p>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-primary float-right"
+                    @click="toogleEdit()"
+                  >Edit</button>
+                </div>
+              </div>
+              <form v-else class="needs-validation" novalidate>
                 <div class="form-group row">
                   <label for="username" class="col-sm-2 col-form-label">Username</label>
                   <div class="col-sm-10">
@@ -139,17 +174,12 @@
                       class="btn btn-primary mt-3"
                       @click="updateConfirmation"
                     >Update Profile</button>
+                    <button
+                      type="button"
+                      class="btn btn-danger mt-3"
+                      @click="toogleEdit()"
+                    >Cancel Edit</button>
                   </div>
-                </div>
-                <div class="form-group row">
-                  <label for="dept" class="col-sm-2 col-from-label"></label>
-                  <!-- <div class="col-sm-10">
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    @click="updateConfirmation"
-                  >Update Profile</button>
-                  </div>-->
                 </div>
               </form>
             </div>
@@ -202,6 +232,9 @@
             </div>
           </div>
         </div>
+        <!-- comment space -->
+        <comment v-if="user && user.id" :owner="`user_${user.id}`" />
+        <!-- end comment -->
       </div>
     </div>
   </div>
@@ -211,6 +244,7 @@
 export default {
   data() {
     return {
+      isEdit: false,
       user: {
         id: "",
         username: "",
@@ -348,6 +382,9 @@ export default {
       this.user.photo = e.target.files[0];
       this.newPhoto = URL.createObjectURL(e.target.files[0]);
       console.log(this.user.photo);
+    },
+    toogleEdit() {
+      this.isEdit = !this.isEdit;
     },
   },
   watch: {

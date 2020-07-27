@@ -39,6 +39,7 @@ Route::group($protect, function () {
     Route::get('mydocument/{id}', 'Api\DocumentController@getMyDocument');
     Route::get('document/{id}', 'Api\DocumentController@show');
     Route::put('document/{id}', 'Api\DocumentController@update');
+    Route::get('documents', 'Api\DocumentController@documents');
     // Route::get('tests3/{file}', 'Api\DocumentController@show');
 
     // Comment
@@ -76,5 +77,7 @@ Route::group($protect, function () {
         Route::patch('document/approve/{id}', 'Api\DocumentController@approve');
         // get pending document
         Route::get('pending', 'Api\DocumentController@getPendingDocument');
+        // get total pending document
+        Route::get('pending/total', 'Api\DocumentController@getTotalPendingDocuments');
     });
 });

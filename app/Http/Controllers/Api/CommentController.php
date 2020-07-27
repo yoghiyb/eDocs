@@ -96,4 +96,22 @@ class CommentController extends Controller
 
         return response()->json(['success' => 'comment diperbarui']);
     }
+
+    public function destroy($id)
+    {
+        try {
+            Comment::where('id', $id)->delete();
+
+            $child_comment = Comment::where('parent_id', $id)->get();
+
+            if (count($child_comment) > 1) {
+                foreach ($child_comment as $comment) {
+                    Comment::where('parent_id', $id)->delete();
+                }
+            }
+            return response()->json(['success' => 'komen dihapus'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()]);
+        }
+    }
 }

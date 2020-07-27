@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Document;
 use App\DocumentTag;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use function PHPSTORM_META\map;
 
@@ -22,6 +25,68 @@ class DocumentController extends Controller
             'model' => $model,
             'columns' => $columns
         ]);
+    }
+
+    public function documents(Request $request)
+    {
+        $operators = [
+            'equal' => '=',
+            'not_equal' => '!=',
+            'less_than' => '<',
+            'greather_than' => '>',
+            'less_than_or_equal_to' => '<=',
+            'greater_than_or_equal_to' => '>=',
+            'in' => 'IN',
+            'like' => 'LIKE'
+        ];
+
+        $validator = Validator::make($request->only([
+            'column', 'direction', 'per_page',
+            // 'search_column', 'search_operator', 'search_input'
+        ]), [
+            'column' => 'required|alpha_dash|in:' . implode(',', Document::$columns_documents),
+            'direction' => 'required|in:asc,desc',
+            'per_page' => 'integer|min:1',
+            'current_page' => 'integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson());
+        }
+
+        try {
+            $document = Document::where('status', 'APPROVED')->get();
+            $document = collect($document)->map(function ($data) {
+                $data->user;
+                $data->approved_by_user;
+                $data->documents_tags;
+                $data['documents_tags'] = collect($data->documents_tags)->map(function ($dt) {
+                    $dt->tag;
+                    return $dt;
+                });
+                return $data;
+            });
+
+            $document = $this->paginate($document, $request->per_page);
+
+            $columns = Document::$columns_documents;
+
+            return response()->json([
+                'model' => $document,
+                'columns' => $columns
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()]);
+        }
+    }
+
+    public function paginate($items, $perPage = 15, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
     public function getMyDocument($id)
@@ -81,6 +146,17 @@ class DocumentController extends Controller
         }
 
         return response()->json(['success' => 'berhasil'], 200);
+    }
+
+    public function getTotalPendingDocuments()
+    {
+        try {
+
+            $pending_document = Document::where('status', 'PENDING')->get();
+            return response()->json(count($pending_document), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()]);
+        }
     }
 
     public function getPendingDocument(Request $request)

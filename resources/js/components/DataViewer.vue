@@ -282,13 +282,6 @@ export default {
         params: { id },
       });
     },
-    goToDetail(id) {
-      console.log("ke halaman show", id);
-      this.$router.push({
-        name: this.detailPath,
-        params: { id },
-      });
-    },
   },
 };
 </script>

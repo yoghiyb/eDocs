@@ -13,6 +13,10 @@ class Document extends Model
         'name', 'status', 'approved_at', 'created_at'
     ];
 
+    public static $columns_documents = [
+        'name', 'status', 'created_by', 'description', 'approved_by', 'approved_at', 'created_at'
+    ];
+
     protected $fillable = [
         'name', 'file', 'created_by', 'status', 'description'
     ];

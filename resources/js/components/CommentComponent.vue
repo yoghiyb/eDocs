@@ -57,8 +57,9 @@
                 @click="editMyComment(comment)"
               >Edit</a>
               <a
-                v-if="comment.from_id == $root.$data.authUser.id"
+                v-if="comment.from_id == $root.$data.authUser.id || $root.$data.authUser.id == '1'"
                 class="badge badge-danger text-light cursor-pointer ml-2"
+                @click="deleteComment(comment.id)"
               >Delete</a>
             </div>
             <div v-for="(reComment,index) in checkChildComment(comments)" :key="index">
@@ -229,6 +230,18 @@ export default {
         if (response.status == 200) {
           this.fetchComment();
           this.newComment = "";
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteComment(id) {
+      try {
+        let endpoint = `${BASE_URL}/comment/${id}`;
+        let response = await axios.delete(endpoint);
+
+        if (response.status === 200) {
+          this.fetchComment();
         }
       } catch (error) {
         console.log(error);
