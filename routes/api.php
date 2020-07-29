@@ -40,7 +40,7 @@ Route::group($protect, function () {
     Route::get('document/{id}', 'Api\DocumentController@show');
     Route::put('document/{id}', 'Api\DocumentController@update');
     Route::get('documents', 'Api\DocumentController@documents');
-    // Route::get('tests3/{file}', 'Api\DocumentController@show');
+    Route::get('document/download/{file}', 'Api\DocumentController@download');
 
     // Comment
     // Route::post('comment', 'Api\CommentController@store');

@@ -90,9 +90,15 @@
                         placeholder="Search"
                         aria-label="search"
                         aria-describedby="basic-addon2"
+                        v-model="query.search_input"
+                        @keyup.enter="fetchDocuments()"
                       />
                       <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button">Search</button>
+                        <button
+                          class="btn btn-outline-secondary"
+                          type="button"
+                          @click="fetchDocuments()"
+                        >Search</button>
                       </div>
                     </div>
                   </div>
@@ -279,8 +285,7 @@ export default {
     fetchDocuments() {
       this.$Progress.start();
       if (this.query.per_page == "") this.query.per_page = 10;
-      let endpoint = `${BASE_URL}/documents?column=${this.query.column}&direction=${this.query.direction}&page=${this.query.page}&per_page=${this.query.per_page}`;
-      //   `&search_column=${this.query.search_column}&search_operator=${this.query.search_operator}&search_input=${this.query.search_input}`;
+      let endpoint = `${BASE_URL}/documents?column=${this.query.column}&direction=${this.query.direction}&page=${this.query.page}&per_page=${this.query.per_page}&search_column=${this.query.search_column}&search_operator=${this.query.search_operator}&search_input=${this.query.search_input}`;
       axios
         .get(endpoint)
         .then((response) => {

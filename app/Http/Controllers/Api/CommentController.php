@@ -104,7 +104,7 @@ class CommentController extends Controller
 
             $child_comment = Comment::where('parent_id', $id)->get();
 
-            if (count($child_comment) > 1) {
+            if (count($child_comment) > 0) {
                 foreach ($child_comment as $comment) {
                     Comment::where('parent_id', $id)->delete();
                 }

@@ -12,7 +12,7 @@ class User extends Authenticatable
     use Notifiable, DataViewer;
 
     public static $columns = [
-        'role', 'dept_id', 'email', 'username'
+        'role', 'dept_id', 'username', 'email'
     ];
 
     /**

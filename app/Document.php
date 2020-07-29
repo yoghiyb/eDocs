@@ -14,7 +14,7 @@ class Document extends Model
     ];
 
     public static $columns_documents = [
-        'name', 'status', 'created_by', 'description', 'approved_by', 'approved_at', 'created_at'
+        'name', 'created_by', 'description', 'approved_by', 'approved_at', 'created_at', 'tag'
     ];
 
     protected $fillable = [

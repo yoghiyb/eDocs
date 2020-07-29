@@ -7,10 +7,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Document;
 use App\DocumentTag;
+use App\Notifications\PendingFile;
+use App\Tag;
+use App\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 use function PHPSTORM_META\map;
 
@@ -42,12 +46,14 @@ class DocumentController extends Controller
 
         $validator = Validator::make($request->only([
             'column', 'direction', 'per_page',
-            // 'search_column', 'search_operator', 'search_input'
+            'search_column', 'search_operator', 'search_input'
         ]), [
             'column' => 'required|alpha_dash|in:' . implode(',', Document::$columns_documents),
             'direction' => 'required|in:asc,desc',
             'per_page' => 'integer|min:1',
-            'current_page' => 'integer|min:1',
+            'search_column' => 'required|alpha_dash|in:' . implode(',', Document::$columns_documents),
+            'search_operator' => 'required|alpha_dash|in:' . implode(',', array_keys($operators)),
+            'search_input' => 'max:255',
         ]);
 
         if ($validator->fails()) {
@@ -55,8 +61,49 @@ class DocumentController extends Controller
         }
 
         try {
-            $document = Document::where('status', 'APPROVED')->get();
-            $document = collect($document)->map(function ($data) {
+
+            $special_column = null;
+            $document_tag = null;
+
+            if ($request->search_column == 'created_by' || $request->search_column == 'approved_by' || $request->search_column == 'tag') {
+                $special_column = DB::table($request->search_column == 'tag' ? 'tags' : 'users')->where(function ($query) use ($request, $operators) {
+                    if ($request->search_input != '') {
+                        if ($request->search_operator == 'in') {
+                            $query->whereIn($request->search_column == 'tag' ? 'name' : 'username', explode(',', $request->search_input));
+                        } else if ($request->search_operator == 'like') {
+                            $query->where($request->search_column == 'tag' ? 'name' : 'username', 'LIKE', '%' . $request->search_input . '%');
+                        } else {
+                            $query->where($request->search_column == 'tag' ? 'name' : 'username', $operators[$request->search_operator], $request->search_input);
+                        }
+                    }
+                })->first();
+
+                if ($request->search_column == 'tag') {
+                    $document_tag = DocumentTag::where('tag_id', $special_column->id)->get();
+                    $document_tag = collect($document_tag)->pluck('document_id')->all();
+                }
+            }
+
+            $document = Document::orderBy($request->column, $request->direction)
+                ->where('status', 'APPROVED')
+                ->where(function ($query) use ($request, $operators, $special_column, $document_tag) {
+                    if ($request->search_input != '') {
+                        if ($request->search_operator == 'in') {
+                            $query->whereIn($request->search_column, explode(',', $request->search_input));
+                        } else if ($request->search_operator == 'like') {
+                            $query->where($request->search_column, 'LIKE', '%' . $request->search_input . '%');
+                        } else {
+                            if ($request->search_column != 'tag') {
+                                $query->where($request->search_column, $operators[$request->search_operator], $special_column ? $special_column->id : $request->search_input);
+                            } else {
+                                $query->whereIn('id', $document_tag);
+                            }
+                        }
+                    }
+                })
+                ->get();
+
+            $document = collect($document)->map(function ($data) use ($request, $operators) {
                 $data->user;
                 $data->approved_by_user;
                 $data->documents_tags;
@@ -80,6 +127,7 @@ class DocumentController extends Controller
         }
     }
 
+    // fungsi pagination untuk data collection
     public function paginate($items, $perPage = 15, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
@@ -141,11 +189,19 @@ class DocumentController extends Controller
                 $tag['document_id'] = $saved_document['id'];
                 DocumentTag::create($tag);
             }
+
+            if ($saved_document->status == 'PENDING') {
+                $admins = User::where('role', 1)->get();
+
+                foreach ($admins as $admin) {
+                    \Notification::route('mail', $admins[0]->email)->notify(new PendingFile($admins[0]));
+                }
+            }
         } catch (\Throwable $th) {
             return response()->json($th->getMessage());
         }
 
-        return response()->json(['success' => 'berhasil'], 200);
+        return response()->json(['success' => $admins[0]->email], 200);
     }
 
     public function getTotalPendingDocuments()
@@ -198,10 +254,10 @@ class DocumentController extends Controller
         }
     }
 
-    // public function show($file)
-    // {
-    //     return Storage::disk('s3')->response('uploads/' . $file);
-    // }
+    public function download($file)
+    {
+        return Storage::disk('s3')->response('uploads/' . $file);
+    }
 
     public function show($id)
     {
@@ -252,13 +308,13 @@ class DocumentController extends Controller
             // get old tags
             $oldTags = DocumentTag::where('document_id', $id)->get();
 
-            if (count($oldTags) > 1) {
+            if (count($oldTags) > 0) {
                 foreach ($oldTags as $oldTag) {
                     DocumentTag::where('document_id', $id)->delete();
                 }
             }
 
-            if (count($tags_id) > 1) {
+            if (count($tags_id) > 0) {
                 foreach ($tags_id as $tag_id) {
                     $tag['tag_id'] = $tag_id['id'];
                     $tag['document_id'] = $id;

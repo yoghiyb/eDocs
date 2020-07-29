@@ -89,6 +89,7 @@
             class="float-right btn btn-primary"
             type="button"
             @click="confirmUploadFile"
+            :disabled="loading"
           >Upload</button>
         </form>
       </div>
@@ -100,6 +101,7 @@
 export default {
   data() {
     return {
+      loading: false,
       document: {
         name: "",
         status: "PENDING",
@@ -155,6 +157,7 @@ export default {
     },
     async uploadFile() {
       this.$Progress.start();
+      this.loading = true;
       let body = {
         ...this.document,
         tag_id: JSON.stringify(this.tag.value),
@@ -184,11 +187,14 @@ export default {
           Swal.fire("Berhasil!", "File berhasil diupload.", "success");
           this.clearFormUpload();
           this.$Progress.finish();
+          this.loading = false;
+          this.goToHome();
         }
       } catch (error) {
         console.log(error);
         Swal.fire("Gagal!", "File gagal diupload.", "error");
         this.$Progress.fail();
+        this.loading = false;
       }
     },
     clearFormUpload() {
@@ -201,16 +207,13 @@ export default {
     selectFile(e) {
       this.document.file = e.target.files[0];
     },
-    addTag(newTag) {
-      const tag = {
-        name: newTag,
-        code: newTag.substring(0, 2) + Math.floor(Math.random() * 10000000),
-      };
-      this.options.push(tag);
-      this.value.push(tag);
-    },
     goBack() {
       this.$router.back();
+    },
+    goToHome() {
+      this.$router.push({
+        name: "DocumentIndex",
+      });
     },
   },
 };
