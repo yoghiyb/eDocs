@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Log;
 use App\Tag;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
@@ -37,13 +39,23 @@ class TagController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->messages());
+            return response()->json($validator->errors()->messages());
         }
 
         try {
             $tag = $request->all();
             $tag['created_by'] = $request->user()->id;
-            Tag::create($tag);
+            $newTag = Tag::create($tag);
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'tag',
+                'type_id' => $newTag->id,
+                'controller' => 'TagController',
+                'function' => 'store',
+                'action' => 'create',
+                'before' => null,
+                'after' => json_encode($newTag)
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
@@ -54,9 +66,20 @@ class TagController extends Controller
     public function destroy($id)
     {
         try {
+            $oldTag = Tag::findOrFail($id);
             Tag::findOrFail($id)->delete();
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'tag',
+                'type_id' => $oldTag->id,
+                'controller' => 'TagController',
+                'function' => 'destroy',
+                'action' => 'delete',
+                'before' => json_encode($oldTag),
+                'after' => null
+            ]);
         } catch (\Throwable $th) {
-            return response()->json(['error' => 'tag gagal dihapus']);
+            return response()->json(['error' => $th->getMessage()]);
         }
         return response()->json(['success' => 'tag berhasil dihapus'], 200);
     }

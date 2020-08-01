@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
@@ -25,7 +27,15 @@ class CommentController extends Controller
         try {
             $comment = $request->all();
 
-            Comment::create($comment);
+            $newComment = Comment::create($comment);
+            Log::create([
+                'user_id' => Auth::id(),
+                'controller' => 'CommentController',
+                'function' => 'store',
+                'action' => 'create',
+                'before' => null,
+                'after' => json_encode($newComment)
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
@@ -68,7 +78,15 @@ class CommentController extends Controller
         try {
             $replyComment = $request->all();
 
-            Comment::create($replyComment);
+            $replied = Comment::create($replyComment);
+            Log::create([
+                'user_id' => Auth::id(),
+                'controller' => 'CommentController',
+                'function' => 'reply',
+                'action' => 'create',
+                'before' => null,
+                'after' => json_encode($replied)
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
@@ -87,9 +105,21 @@ class CommentController extends Controller
         }
 
         try {
+            $oldComment = Comment::findOrFail($id);
             $comment = $request->all();
 
             Comment::where('id', $id)->update($comment);
+
+            $updateComment = Comment::findOrFail($id);
+
+            Log::create([
+                'user_id' => Auth::id(),
+                'controller' => 'CommentController',
+                'function' => 'update',
+                'action' => 'update',
+                'before' => json_encode($oldComment),
+                'after' => json_encode($updateComment)
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
@@ -100,6 +130,7 @@ class CommentController extends Controller
     public function destroy($id)
     {
         try {
+            $oldComment = Comment::findOrFail($id);
             Comment::where('id', $id)->delete();
 
             $child_comment = Comment::where('parent_id', $id)->get();
@@ -109,6 +140,16 @@ class CommentController extends Controller
                     Comment::where('parent_id', $id)->delete();
                 }
             }
+
+            Log::create([
+                'user_id' => Auth::id(),
+                'controller' => 'CommentController',
+                'function' => 'destroy',
+                'action' => 'delete',
+                'before' => json_encode($oldComment, $child_comment),
+                'after' => null,
+            ]);
+
             return response()->json(['success' => 'komen dihapus'], 200);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);

@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Log;
 use Illuminate\Support\Facades\Validator;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -82,6 +84,19 @@ class UserController extends Controller
             }
 
             User::where('id', $id)->update($user);
+
+            $updateUser = User::findOrFail($id);
+
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'user',
+                'type_id' => $oldUser->id,
+                'controller' => 'UserController',
+                'function' => 'update',
+                'action' => 'update',
+                'before' => json_encode($oldUser),
+                'after' => json_encode($updateUser)
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => 'profile gagal diperbarui ' . $th->getMessage()]);
         }
@@ -139,7 +154,17 @@ class UserController extends Controller
             $user['password'] = Hash::make($request->password);
             $user['api_token'] = Str::random(60);
 
-            User::create($user);
+            $newUser = User::create($user);
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'user',
+                'type_id' => $newUser->id,
+                'controller' => 'UserController',
+                'function' => 'store',
+                'action' => 'create',
+                'before' => null,
+                'after' => json_encode($newUser)
+            ]);
         } catch (\Throwable $th) {
             return response()->json($th->getMessage());
         }
@@ -159,7 +184,18 @@ class UserController extends Controller
     public function destroy($id)
     {
         try {
+            $oldUser = User::findOrFail($id);
             User::where('id', $id)->delete();
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'user',
+                'type_id' => $oldUser->id,
+                'controller' => 'UserController',
+                'function' => 'destroy',
+                'action' => 'delete',
+                'before' => $oldUser,
+                'after' => null
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }

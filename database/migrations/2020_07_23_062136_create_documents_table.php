@@ -22,7 +22,7 @@ class CreateDocumentsTable extends Migration
             $table->bigInteger('approved_by')->nullable();
             $table->timestamp('approved_at')->nullable();
             $table->text('description');
-            // $table->bigInteger('comment_id')->nullable();
+            // $table->bigInteger('access_for')->nullable();
             $table->timestamps();
         });
 

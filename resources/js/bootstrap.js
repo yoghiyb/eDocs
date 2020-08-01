@@ -24,7 +24,13 @@ try {
 window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + window.Laravel.api_token;
+
+let { api_token } = window.Laravel;
+if (api_token) {
+    window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + window.Laravel.api_token;
+} else {
+    console.log('api token not found');
+}
 
 let token = document.head.querySelector('meta[name="csrf-token"]');
 

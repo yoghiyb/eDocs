@@ -79,6 +79,7 @@
                 name="file"
                 required
                 accept=".xlsx, .xls, image/*, .doc, .docx, .pdf"
+                @change="selectFile"
               />
               <label class="custom-file-label" for="file">Choose file...</label>
               <div class="invalid-feedback">file tidak boleh kosong</div>
@@ -88,6 +89,7 @@
             class="float-right btn btn-primary"
             type="button"
             @click="confirmUpdateFile()"
+            :disabled="loading"
           >Update</button>
         </form>
       </div>
@@ -99,6 +101,7 @@
 export default {
   data() {
     return {
+      loading: false,
       document: {
         name: "",
         status: "PENDING",
@@ -174,6 +177,7 @@ export default {
     },
     async updateFile() {
       this.$Progress.start();
+      this.loading = true;
       try {
         let { name, status, description } = this.document;
 
@@ -207,12 +211,17 @@ export default {
         if (response.status == 200) {
           Swal.fire("Berhasil!", "File berhasil diupload.", "success");
           this.fetchDocumentDetail();
+          this.loading = false;
           this.$Progress.finish();
         }
       } catch (error) {
         console.log(error);
+        this.loading = false;
         this.$Progress.fail();
       }
+    },
+    selectFile(e) {
+      this.document.file = e.target.files[0];
     },
     goBack() {
       this.$router.back();

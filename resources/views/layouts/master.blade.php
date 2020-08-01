@@ -47,7 +47,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <router-link to="/dashboard" class="brand-link">
+            <router-link to="/home" class="brand-link">
                 <img src="/img/logo.png" alt="AppInterview Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">E-Docs</span>
             </router-link>
@@ -144,10 +144,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <footer class="main-footer">
             <!-- To the right -->
             <div class="float-right d-none d-sm-inline">
-                Anything you want
+                Template AdminLTE
             </div>
             <!-- Default to the left -->
-            <strong>Copyright &copy; 2014-2018 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+            <strong>Copyright &copy; 2020 <a href="https://github.com/yoghiyb/eDocs" target="_blank">yoghiyb</a>.</strong>.
         </footer>
     </div>
     <!-- ./wrapper -->

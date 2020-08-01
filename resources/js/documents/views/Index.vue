@@ -139,8 +139,15 @@
                 >{{tag_item.tag.name}}</span>
               </div>
               <div class="card-footer">
-                <button type="button" class="btn btn-secondary btn-sm">
+                <button type="button" class="btn btn-secondary btn-sm" @click="downloadFile(item)">
                   <i class="fas fa-download"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  @click="downloadFile(item, 'pdf')"
+                >
+                  <i class="fas fa-file-pdf"></i>
                 </button>
               </div>
             </div>
@@ -336,6 +343,38 @@ export default {
     goToPage(page) {
       this.query.page = page;
       this.fetchDocuments();
+    },
+    downloadFile(file, type = null) {
+      this.$Progress.start();
+      let endpoint = `${BASE_URL}/document/download/${file.file}`;
+      axios
+        .get(endpoint, { responseType: "blob" })
+        .then((response) => {
+          const mime = file.file.split(".")[1];
+          var blob;
+
+          if (type != "pdf") {
+            blob = new Blob([response.data]);
+          } else {
+            blob = new Blob([response.data], { type: "application/pdf" });
+          }
+
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+
+          link.download =
+            type == "pdf" ? `${file.name}.pdf` : `${file.name}.${mime}`;
+          // link.download = `file.pdf`;
+          link.href = url;
+
+          link.click();
+
+          this.$Progress.finish();
+        })
+        .catch((error) => {
+          console.log(error);
+          this.$Progress.fail();
+        });
     },
     async getTotalPendingDocuments() {
       try {

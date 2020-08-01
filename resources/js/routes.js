@@ -1,6 +1,7 @@
 /**
  * Import Route Aplikasi
  */
+import HomeRoutes from './home/routes'
 import ProfilesRoutes from './profiles/routes'
 import DocumentsRoutes from './documents/routes'
 import UsersRoutes from './users/routes'
@@ -19,6 +20,7 @@ let notFoundPage = { path: '*', component: require('./components/NotFound.vue').
  * (...AppRoute) untuk ekstrak array dari route aplikasi
  */
 routes.push(
+    ...HomeRoutes,
     ...ProfilesRoutes,
     ...DocumentsRoutes,
     ...UsersRoutes,

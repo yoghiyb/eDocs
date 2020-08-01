@@ -7,7 +7,14 @@
       </div>
     </section>
 
-    <data-viewer source="tag" column="name" :hasAction="true" :canEdit="false" :canDelete="true" />
+    <data-viewer
+      source="tag"
+      column="name"
+      :hasAction="true"
+      :canEdit="false"
+      :canDelete="true"
+      deleteSource="tag"
+    />
   </div>
 </template>
 

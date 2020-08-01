@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Document;
 use App\DocumentTag;
+use App\Log;
 use App\Notifications\PendingFile;
 use App\Tag;
 use App\User;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 use function PHPSTORM_META\map;
@@ -103,7 +105,7 @@ class DocumentController extends Controller
                 })
                 ->get();
 
-            $document = collect($document)->map(function ($data) use ($request, $operators) {
+            $document = collect($document)->map(function ($data) {
                 $data->user;
                 $data->approved_by_user;
                 $data->documents_tags;
@@ -197,11 +199,27 @@ class DocumentController extends Controller
                     \Notification::route('mail', $admins[0]->email)->notify(new PendingFile($admins[0]));
                 }
             }
+
+            $createdDocument = Document::findOrFail($saved_document->id);
+            $createdDocument->documents_tags;
+            $createdDocument->user;
+            $createdDocument->approved_by_user;
+
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'file',
+                'type_id' => $saved_document->id,
+                'controller' => 'DocumentController',
+                'function' => 'store',
+                'action' => 'create',
+                'before' => json_encode($createdDocument),
+                'after' => null
+            ]);
         } catch (\Throwable $th) {
             return response()->json($th->getMessage());
         }
 
-        return response()->json(['success' => $admins[0]->email], 200);
+        return response()->json(['success' => $filePath], 200);
     }
 
     public function getTotalPendingDocuments()
@@ -241,22 +259,59 @@ class DocumentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->messages());
+            return response()->json($validator->errors()->messages());
         }
         try {
+
+            $oldFile = Document::findOrFail($id);
+
             $file = $request->all();
 
             $file['approved_at'] = now();
             Document::where('id', $id)->update($file);
+
+            $approvedFile = Document::findOrFail($id);
+            $approvedFile->documents_tags;
+            $approvedFile->user;
+            $approvedFile->approved_by_user;
+
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'file',
+                'type_id' => $oldFile->id,
+                'controller' => 'DocumentController',
+                'function' => 'approve',
+                'action' => 'update',
+                'before' => json_encode($oldFile),
+                'after' => json_encode($approvedFile)
+            ]);
             return response()->json(['success' => 'berhasil disetujui'], 200);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
     }
 
-    public function download($file)
+    public function download($file_name)
     {
-        return Storage::disk('s3')->response('uploads/' . $file);
+        try {
+            $mime = Storage::disk('s3')->getDriver()->getMimetype('uploads/' . $file_name);
+
+            $size = Storage::disk('s3')->getDriver()->getSize('uploads/' . $file_name);
+
+            $headers =  [
+                'Content-Type' => $mime,
+                'Content-Length' => $size,
+                'Content-Description' => 'File Transfer',
+                'Content-Disposition' => "attachment; filename={$file_name}",
+                'Content-Transfer-Encoding' => 'binary',
+            ];
+
+            ob_end_clean();
+
+            return \Response::make(Storage::disk('s3')->get('uploads/' . $file_name), 200, $headers);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()]);
+        }
     }
 
     public function show($id)
@@ -295,9 +350,19 @@ class DocumentController extends Controller
         try {
             $document = $request->except(['tag_id', '_method', 'file']);
 
+            $oldFile = Document::findOrFail($id);
+            $oldFile->documents_tags;
+            $oldFile->user;
+            $oldFile->approved_by_user;
+
             if ($request->hasFile('file') || $request->file != '') {
                 $document = $request->except(['tag_id', '_method']);
-                return response()->json(['a' => 'ada file'], 200);
+
+                Storage::disk('s3')->delete('uploads/' . $oldFile->file);
+
+                $filePath = $request->file('file')->store('uploads', 's3');
+                $document['file'] = basename($filePath);
+                // return response()->json(['a' => 'ada file'], 200);
             }
 
             Document::where('id', $id)->update($document);
@@ -321,17 +386,49 @@ class DocumentController extends Controller
                     DocumentTag::create($tag);
                 }
             }
+
+            $updatedFile = Document::findOrFail($id);
+            $updatedFile->documents_tags;
+            $updatedFile->user;
+            $updatedFile->approved_by_user;
+
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'file',
+                'type_id' => $id,
+                'controller' => 'DocumentController',
+                'function' => 'update',
+                'action' => 'update',
+                'before' => json_encode($oldFile),
+                'after' => json_encode($updatedFile)
+            ]);
         } catch (\Throwable $th) {
             return response()->json($th->getMessage());
         }
 
-        return response()->json(['success' => 'dokumen berhasil diperbarui'], 200);
+        return response()->json(['success' => $document], 200);
     }
 
     public function destroy($id)
     {
         try {
-            Document::where('id', $id)->delete();
+            $document = Document::findOrFail($id);
+            $document->documents_tags;
+            $document->user;
+            $document->approved_by_user;
+
+            Storage::disk('s3')->delete('uploads/' . $document->file);
+            $document->delete();
+            Log::create([
+                'user_id' => Auth::id(),
+                'type' => 'file',
+                'type_id' => $document->id,
+                'controller' => 'DocumentController',
+                'function' => 'destroy',
+                'action' => 'delete',
+                'before' => json_encode($document),
+                'after' => null
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
