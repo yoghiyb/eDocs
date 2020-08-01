@@ -10,8 +10,16 @@ class Log extends Model
         'user_id', 'type', 'type_id', 'controller', 'function', 'action', 'before', 'after'
     ];
 
+    protected $hidden = [
+        'before', 'after'
+    ];
+
     public function user()
     {
-        return $this->hasOne('App\User');
+        return $this->belongsTo('App\User');
     }
+
+    // public function type_data(){
+    //     if($this->)
+    // }
 }

@@ -48,6 +48,9 @@ Route::group($protect, function () {
     Route::resource('comment', 'Api\CommentController')->only(['update', 'destroy', 'store']);
     Route::post('comment/reply', 'Api\CommentController@reply');
 
+    // log
+    Route::get('logs', 'Api\LogController@index');
+
     // khusus admin
     Route::group(['middleware' => 'admin'], function () {
 

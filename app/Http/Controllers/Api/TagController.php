@@ -11,9 +11,13 @@ use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
 {
+    // fungsi untuk menampilan data tag
     public function index()
     {
+        // panggil query helper
         $model = Tag::searchPaginateAndOrder();
+
+        // ambil columns dari model
         $columns = Tag::$columns;
 
         return response()->json([
@@ -22,6 +26,7 @@ class TagController extends Controller
         ]);
     }
 
+    // fungsi untk
     public function getAllTag()
     {
         try {
@@ -32,20 +37,27 @@ class TagController extends Controller
         return response()->json($tag, 200);
     }
 
+    // fungsi untuk membuat tag baru
     public function store(Request $request)
     {
+        // validasi request
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:12'
         ]);
 
+        // jika tidak lolos validasi
         if ($validator->fails()) {
             return response()->json($validator->errors()->messages());
         }
 
         try {
+            // ambil semua requst
             $tag = $request->all();
+            // ambil id pembuat tag
             $tag['created_by'] = $request->user()->id;
+            // buat tag baru
             $newTag = Tag::create($tag);
+            // buat log untuk pembuatan tag baru
             Log::create([
                 'user_id' => Auth::id(),
                 'type' => 'tag',
@@ -63,11 +75,15 @@ class TagController extends Controller
         return response()->json(['success' => 'tag berhasil ditambahkan'], 200);
     }
 
+    // fungsi untuk menghapus tag
     public function destroy($id)
     {
         try {
+            // ambil data tag
             $oldTag = Tag::findOrFail($id);
+            // hapus data tag
             Tag::findOrFail($id)->delete();
+            // buat log untuk penghapusan tag
             Log::create([
                 'user_id' => Auth::id(),
                 'type' => 'tag',

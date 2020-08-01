@@ -62,7 +62,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(row,index) in model.data" :key="index">
+                <tr v-if="model.data && model.data.length == 0">
+                  <td :colspan="columns.length + 1" class="text-center">Tidak ada data!</td>
+                </tr>
+                <tr v-else v-for="(row,index) in model.data" :key="index">
                   <td v-for="(val, key) in row" v-if="matchingColumns(key)" :key="key">{{val}}</td>
                   <td v-if="hasAction">
                     <button
@@ -159,7 +162,7 @@ export default {
   data() {
     return {
       model: {},
-      columns: {},
+      columns: [],
       query: {
         page: 1,
         column: this.column,

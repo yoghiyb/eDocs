@@ -2181,8 +2181,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.editComment.updateComment = "";
     },
     checkParentComment: function checkParentComment(comments) {
-      //   let a = comments.filter((comment) => comment.parent_id == null);
-      //   console.log(a);
       return comments.filter(function (comment) {
         return comment.parent_id == null;
       });
@@ -2507,12 +2505,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["source", "column", "canEdit", "canDelete", "showDetail", "hasAction", "editPath", "detailPath", "deleteSource"],
   data: function data() {
     return {
       model: {},
-      columns: {},
+      columns: [],
       query: {
         page: 1,
         column: this.column,
@@ -3679,6 +3680,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3708,7 +3731,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   mounted: function mounted() {
     this.fetchDocuments();
-    this.getTotalPendingDocuments();
+    console.log(this.$root.$data.authUser.role != "3");
+
+    if (this.$root.$data.authUser.role != "3") {
+      this.getTotalPendingDocuments();
+    }
   },
   methods: {
     goToUploadDocument: function goToUploadDocument() {
@@ -46521,70 +46548,83 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "tbody",
-                _vm._l(_vm.model.data, function(row, index) {
-                  return _c(
-                    "tr",
-                    { key: index },
-                    [
-                      _vm._l(row, function(val, key) {
-                        return _vm.matchingColumns(key)
-                          ? _c("td", { key: key }, [_vm._v(_vm._s(val))])
-                          : _vm._e()
-                      }),
-                      _vm._v(" "),
-                      _vm.hasAction
-                        ? _c("td", [
-                            _vm.showDetail
-                              ? _c(
-                                  "button",
-                                  {
-                                    staticClass: "btn btn-sm btn-warning",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.goToDetail(row.id)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("Detail")]
-                                )
-                              : _vm._e(),
+                [
+                  _vm.model.data && _vm.model.data.length == 0
+                    ? _c("tr", [
+                        _c(
+                          "td",
+                          {
+                            staticClass: "text-center",
+                            attrs: { colspan: _vm.columns.length + 1 }
+                          },
+                          [_vm._v("Tidak ada data!")]
+                        )
+                      ])
+                    : _vm._l(_vm.model.data, function(row, index) {
+                        return _c(
+                          "tr",
+                          { key: index },
+                          [
+                            _vm._l(row, function(val, key) {
+                              return _vm.matchingColumns(key)
+                                ? _c("td", { key: key }, [_vm._v(_vm._s(val))])
+                                : _vm._e()
+                            }),
                             _vm._v(" "),
-                            _vm.canEdit
-                              ? _c(
-                                  "button",
-                                  {
-                                    staticClass: "btn btn-sm btn-primary",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.goToEdit(row.id)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("Edit")]
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _vm.canDelete
-                              ? _c(
-                                  "button",
-                                  {
-                                    staticClass: "btn btn-sm btn-danger",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.confirmDelete(row.id)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("Delete")]
-                                )
+                            _vm.hasAction
+                              ? _c("td", [
+                                  _vm.showDetail
+                                    ? _c(
+                                        "button",
+                                        {
+                                          staticClass: "btn btn-sm btn-warning",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.goToDetail(row.id)
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("Detail")]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  _vm.canEdit
+                                    ? _c(
+                                        "button",
+                                        {
+                                          staticClass: "btn btn-sm btn-primary",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.goToEdit(row.id)
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("Edit")]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  _vm.canDelete
+                                    ? _c(
+                                        "button",
+                                        {
+                                          staticClass: "btn btn-sm btn-danger",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.confirmDelete(row.id)
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("Delete")]
+                                      )
+                                    : _vm._e()
+                                ])
                               : _vm._e()
-                          ])
-                        : _vm._e()
-                    ],
-                    2
-                  )
-                }),
-                0
+                          ],
+                          2
+                        )
+                      })
+                ],
+                2
               )
             ])
           ])
@@ -49197,6 +49237,26 @@ var render = function() {
                     ]
                   )
                 ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.$root.$data.authUser.role != "3"
+              ? _c("li", { staticClass: "nav-item" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "nav-link",
+                      attrs: {
+                        id: "logs-tab",
+                        "data-toggle": "tab",
+                        href: "#logs",
+                        role: "tab",
+                        "aria-controls": "logs",
+                        "aria-selected": "false"
+                      }
+                    },
+                    [_vm._v("Logs")]
+                  )
+                ])
               : _vm._e()
           ]
         )
@@ -49763,6 +49823,21 @@ var render = function() {
             ],
             1
           )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.$root.$data.authUser.role !== "3"
+        ? _c(
+            "div",
+            {
+              staticClass: "tab-pane fade mt-3",
+              attrs: {
+                id: "logs",
+                role: "tabpanel",
+                "aria-labelledby": "logs-tab"
+              }
+            },
+            [_vm._m(3)]
+          )
         : _vm._e()
     ])
   ])
@@ -49818,6 +49893,14 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-1" }, [
       _c("h4", [_vm._v("Search")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-12" })
     ])
   }
 ]

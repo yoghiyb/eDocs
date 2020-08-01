@@ -50,6 +50,17 @@
               <span v-if="totalPending > 0" class="badge badge-danger">{{totalPending}}</span>
             </a>
           </li>
+          <li class="nav-item" v-if="$root.$data.authUser.role != '3'">
+            <a
+              class="nav-link"
+              id="logs-tab"
+              data-toggle="tab"
+              href="#logs"
+              role="tab"
+              aria-controls="logs"
+              aria-selected="false"
+            >Logs</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -249,6 +260,17 @@
           deleteSource="document"
         />
       </div>
+      <div
+        class="tab-pane fade mt-3"
+        id="logs"
+        role="tabpanel"
+        aria-labelledby="logs-tab"
+        v-if="$root.$data.authUser.role !== '3'"
+      >
+        <div class="row">
+          <div class="col-md-12"></div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -283,7 +305,10 @@ export default {
   },
   mounted() {
     this.fetchDocuments();
-    this.getTotalPendingDocuments();
+    console.log(this.$root.$data.authUser.role != "3");
+    if (this.$root.$data.authUser.role != "3") {
+      this.getTotalPendingDocuments();
+    }
   },
   methods: {
     goToUploadDocument() {

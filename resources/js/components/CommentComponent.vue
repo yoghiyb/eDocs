@@ -117,7 +117,6 @@ export default {
   },
   methods: {
     async fetchComment() {
-      //   console.log("dari comment");
       try {
         let endpoint = `${BASE_URL}/comment/${this.owner}`;
         let response = await axios.get(endpoint);
@@ -180,8 +179,6 @@ export default {
       this.editComment.updateComment = "";
     },
     checkParentComment(comments) {
-      //   let a = comments.filter((comment) => comment.parent_id == null);
-      //   console.log(a);
       return comments.filter((comment) => comment.parent_id == null);
     },
     checkChildComment(comments) {
