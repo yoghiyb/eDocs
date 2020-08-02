@@ -57,8 +57,13 @@ class User extends Authenticatable
         return $this->hasMany('App\Comment',  'id', ['from_id', 'to_id']);
     }
 
+    public function log_data()
+    {
+        return $this->hasMany('App\Log', 'id', 'uder_id');
+    }
+
     public function log()
     {
-        return $this->hasMany('App\Log');
+        return $this->hasMany('App\Log', 'id', 'type_id');
     }
 }

@@ -27,18 +27,19 @@ class LogController extends Controller
             // perulangan untuk mengambil relasi dari model
             foreach ($log as $key => $value) {
                 collect($value)->map(function ($d) {
-                    // kondisi menyesuaikan type data
-                    if ($d->type == 'file') {
-                        $query = Document::where('id', $d->type_id)->first();
-                        $d['type_data'] = $query;
-                    } else if ($d->type == 'user') {
-                        $query = User::where('id', $d->type_id)->first();
-                        $d['type_data'] = $query;
-                    } else {
-                        $query = Tag::where('id', $d->type_id)->first();
-                        $d['type_data'] = $query;
-                    };
-                    $d->user;
+                    $d->{$d->type};
+                    if ($d->type == 'comment' && $d->{$d->type} != null) {
+                        $d->{$d->type}->to_user;
+                        $d->{$d->type}->from_user;
+
+                        $id = explode('_', $d->{$d->type}->comment_owner);
+                        if ($id[0] == 'doc') {
+                            $d->{$d->type}['document'] = Document::where('id', $id[1])->first();
+                        } else {
+                            $d->{$d->type}['user'] = User::where('id', $id[1])->first();
+                        }
+                    }
+                    $d->user_data;
                     return $d;
                 });
             }

@@ -35,4 +35,14 @@ class Document extends Model
     {
         return $this->belongsTo('App\User', 'approved_by', 'id');
     }
+
+    public function log()
+    {
+        return $this->hasMany('App\Log', 'id', 'type_id');
+    }
+
+    // public function comment()
+    // {
+    //     return $this->hasMany('App\Comment');
+    // }
 }

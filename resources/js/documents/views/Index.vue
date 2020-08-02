@@ -268,7 +268,9 @@
         v-if="$root.$data.authUser.role !== '3'"
       >
         <div class="row">
-          <div class="col-md-12"></div>
+          <div class="col-md-12">
+            <timeline />
+          </div>
         </div>
       </div>
     </div>

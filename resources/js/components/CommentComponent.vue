@@ -74,10 +74,31 @@
                   >{{reComment.from_id == '1' ? 'Admin' : reComment.from_id == '2' ? 'Manager' : 'Staff'}}</span>&nbsp;:
                 </div>
                 <div class="col-md-10 col-sm-12">
-                  <p class="text-capitalize">{{reComment.comment}}</p>
-                  <div class="d-flex flex-row">
-                    <a class="badge badge-secondary text-light cursor-pointer">Edit</a>
-                    <a class="badge badge-danger text-light cursor-pointer ml-2">Delete</a>
+                  <textarea
+                    v-if="editComment.comment_id == reComment.id"
+                    class="form-control mt-2"
+                    v-model="editComment.updateComment"
+                  ></textarea>
+                  <p v-else class="text-capitalize">{{reComment.comment}}</p>
+                  <div v-if="editComment.comment_id == reComment.id" class="d-flex flex-row mt-2">
+                    <a
+                      class="badge badge-primary text-light cursor-pointer"
+                      @click="updateThisComment(reComment.id)"
+                    >Submit</a>
+                    <a
+                      class="badge badge-secondary text-light cursor-pointer ml-2"
+                      @click="cancelEdit()"
+                    >Cancel Edit</a>
+                  </div>
+                  <div v-else class="d-flex flex-row">
+                    <a
+                      class="badge badge-secondary text-light cursor-pointer"
+                      @click="editMyComment(reComment)"
+                    >Edit</a>
+                    <a
+                      class="badge badge-danger text-light cursor-pointer ml-2"
+                      @click="deleteComment(reComment.id)"
+                    >Delete</a>
                   </div>
                 </div>
               </div>
@@ -153,7 +174,7 @@ export default {
           comment: replyComment,
         };
 
-        console.log("reply comment", body);
+        // console.log("reply comment", body);
 
         let response = await axios.post(endpoint, body);
 
@@ -183,7 +204,7 @@ export default {
     },
     checkChildComment(comments) {
       let a = comments.filter((comment) => comment.parent_id != null);
-      console.log("reply comment", a);
+      //   console.log("reply comment", a);
       return comments.filter((comment) => comment.parent_id != null);
     },
     async updateThisComment(id) {

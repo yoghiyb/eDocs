@@ -19,4 +19,14 @@ class Comment extends Model
     {
         return $this->belongsTo('App\User', 'to_id', 'id');
     }
+
+    public function log()
+    {
+        return $this->hasMany('App\Log', 'id', 'type_id');
+    }
+
+    // public function document()
+    // {
+    //     return $this->belongsTo('App\Comment');
+    // }
 }

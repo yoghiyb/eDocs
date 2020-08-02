@@ -268,8 +268,8 @@ class DocumentController extends Controller
                 'controller' => 'DocumentController',
                 'function' => 'store',
                 'action' => 'create',
-                'before' => json_encode($createdDocument),
-                'after' => null
+                'before' => null,
+                'after' => json_encode($createdDocument)
             ]);
         } catch (\Throwable $th) {
             return response()->json($th->getMessage());

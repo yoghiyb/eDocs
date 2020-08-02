@@ -7,7 +7,7 @@
       </div>
     </section>
 
-    <div class="card">
+    <div v-if="user.id != null" class="card">
       <div class="card-body">
         <div class="row">
           <div class="col-md-4">
@@ -47,9 +47,14 @@
         </div>
       </div>
     </div>
+    <div v-else class="card">
+      <div class="card-body">
+        <h1 class="text-center">User kosong atau sudah dihapus!</h1>
+      </div>
+    </div>
 
     <!-- comment space -->
-    <comment :owner="`user_${this.$route.params.id}`" />
+    <comment v-if="user.id != null" :owner="`user_${this.$route.params.id}`" />
     <!-- end comment -->
   </div>
 </template>

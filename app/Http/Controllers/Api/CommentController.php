@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Comment;
+use App\Document;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Log;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -31,14 +33,26 @@ class CommentController extends Controller
             $comment = $request->all();
             // buat komen
             $newComment = Comment::create($comment);
+
+            $logComment = Comment::findOrFail($newComment->id);
+            $logComment->from_user;
+            $logComment->to_user;
+            $owner = explode('_', $logComment->comment_owner);
+            if ($owner[0] == 'doc') {
+                $logComment['document'] = Document::where('id', $owner[1])->first();
+            } else {
+                $logComment['user'] = User::where('id', $owner[1])->first();
+            }
             // buat log untuk komen baru
             Log::create([
                 'user_id' => Auth::id(),
+                'type' => 'comment',
+                'type_id' => $logComment->id,
                 'controller' => 'CommentController',
                 'function' => 'store',
                 'action' => 'create',
                 'before' => null,
-                'after' => json_encode($newComment)
+                'after' => json_encode($logComment)
             ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
@@ -87,14 +101,27 @@ class CommentController extends Controller
             $replyComment = $request->all();
             // buat reply komen
             $replied = Comment::create($replyComment);
+
+            $repliedComment = Comment::findOrFail($replied->id);
+            $repliedComment->from_user;
+            $repliedComment->to_user;
+            $owner = explode('_', $repliedComment->comment_owner);
+            if ($owner[0] == 'doc') {
+                $repliedComment['document'] = Document::where('id', $owner[1])->first();
+            } else {
+                $repliedComment['user'] = User::where('id', $owner[1])->first();
+            }
+
             // buat log untuk reply komen
             Log::create([
                 'user_id' => Auth::id(),
+                'type' => 'comment',
+                'type_id' => $repliedComment->id,
                 'controller' => 'CommentController',
                 'function' => 'reply',
                 'action' => 'create',
                 'before' => null,
-                'after' => json_encode($replied)
+                'after' => json_encode($repliedComment)
             ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
@@ -118,15 +145,27 @@ class CommentController extends Controller
         try {
             // ambil data komen berdasarkan id-nya
             $oldComment = Comment::findOrFail($id);
+            $oldComment->from_user;
+            $oldComment->to_user;
             // ambil semua request
             $comment = $request->all();
             // perbarui komen
             Comment::where('id', $id)->update($comment);
             // ambil data komen yg terbaru
             $updateComment = Comment::findOrFail($id);
+            $updateComment->from_user;
+            $updateComment->to_user;
+            $owner = explode('_', $updateComment->comment_owner);
+            if ($owner[0] == 'doc') {
+                $updateComment['document'] = Document::where('id', $owner[1])->first();
+            } else {
+                $updateComment['user'] = User::where('id', $owner[1])->first();
+            }
             // buat log untuk pembaruan komen
             Log::create([
                 'user_id' => Auth::id(),
+                'type' => 'comment',
+                'type_id' => $id,
                 'controller' => 'CommentController',
                 'function' => 'update',
                 'action' => 'update',
@@ -146,6 +185,14 @@ class CommentController extends Controller
         try {
             // ambil data komen
             $oldComment = Comment::findOrFail($id);
+            $oldComment->from_user;
+            $oldComment->to_user;
+            $owner = explode('_', $oldComment->comment_owner);
+            if ($owner[0] == 'doc') {
+                $oldComment['document'] = Document::where('id', $owner[1])->first();
+            } else {
+                $oldComment['user'] = User::where('id', $owner[1])->first();
+            }
             // hapus komen
             Comment::where('id', $id)->delete();
             // ambil data komentar yang terhubung
@@ -160,10 +207,12 @@ class CommentController extends Controller
             // buat log untuk hapus komentar
             Log::create([
                 'user_id' => Auth::id(),
+                'type' => 'comment',
+                'type_id' => $id,
                 'controller' => 'CommentController',
                 'function' => 'destroy',
                 'action' => 'delete',
-                'before' => json_encode($oldComment, $child_comment),
+                'before' => json_encode($oldComment),
                 'after' => null,
             ]);
 

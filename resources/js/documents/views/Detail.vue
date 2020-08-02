@@ -6,7 +6,7 @@
         <button class="col-md-1 col-sm-2 btn btn-primary" @click="goBack()">Back</button>
       </div>
     </section>
-    <div class="card">
+    <div v-if="document" class="card">
       <div class="card-body">
         <div class="row mb-3">
           <div class="col-md-4">
@@ -89,8 +89,13 @@
         >Approve</button>
       </div>
     </div>
+    <div v-else class="card">
+      <div class="card-body">
+        <h1 class="text-center">File kosong atau telah dihapus!</h1>
+      </div>
+    </div>
     <!-- comment space -->
-    <comment :owner="`doc_${this.$route.params.id}`" />
+    <comment v-if="document" :owner="`doc_${this.$route.params.id}`" />
     <!-- end comment -->
   </div>
 </template>

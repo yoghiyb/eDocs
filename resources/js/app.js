@@ -28,6 +28,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('data-viewer', require('./components/DataViewer.vue').default);
 Vue.component('multiselect', Multiselect);
 Vue.component('comment', require('./components/CommentComponent.vue').default);
+Vue.component('timeline', require('./components/Timeline.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

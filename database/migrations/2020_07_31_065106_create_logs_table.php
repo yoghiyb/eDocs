@@ -16,7 +16,7 @@ class CreateLogsTable extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id');
-            $table->enum('type', ['file', 'user', 'tag']);
+            $table->enum('type', ['file', 'user', 'tag', 'comment']);
             $table->bigInteger('type_id');
             $table->string('controller');
             $table->string('function');
