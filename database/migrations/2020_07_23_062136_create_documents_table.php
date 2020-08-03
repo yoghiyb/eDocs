@@ -19,6 +19,8 @@ class CreateDocumentsTable extends Migration
             $table->string('file');
             $table->integer('created_by');
             $table->string('status');
+            $table->string('access_role');
+            $table->integer('access_dept');
             $table->bigInteger('approved_by')->nullable();
             $table->timestamp('approved_at')->nullable();
             $table->text('description');

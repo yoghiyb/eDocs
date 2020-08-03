@@ -2887,10 +2887,10 @@ __webpack_require__.r(__webpack_exports__);
           var _before = JSON.parse(item.before);
 
           if (item.user == null) {
-            return "<a href=\"/user/".concat(item.user_id, "/detail\" >").concat(item.user_data.username, "</a> memperbarui user <a href=\"/user/").concat(_after3.id, "/detail\" >").concat(_after3.username == _before.username ? "".concat(_before.username, " menjadi ").concat(_after3.username) : "".concat(_after3.username), "</a> (DIHAPUS) ");
+            return "<a href=\"/user/".concat(item.user_id, "/detail\" >").concat(item.user_data.username, "</a> memperbarui user ").concat(_after3.username == _before.username ? "".concat(_before.username, " menjadi <a href=\"/user/").concat(_after3.id, "/detail\" >").concat(_after3.username, "</a>") : "<a href=\"/user/".concat(_after3.id, "/detail\" >").concat(_after3.username, "</a>"), " (DIHAPUS) ");
           }
 
-          return "<a href=\"/user/".concat(item.user_id, "/detail\" >").concat(item.user_data.username, "</a> memperbarui file <a href=\"/user/").concat(_after3.id, "/detail\" >").concat(item.user && item.user.username, "</a>");
+          return "<a href=\"/user/".concat(item.user_id, "/detail\" >").concat(item.user_data.username, "</a> memperbarui user <a href=\"/user/").concat(_after3.id, "/detail\" >").concat(item.user && item.user.username, "</a>");
         }
 
         if (item.action == "delete") {
@@ -3481,6 +3481,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3605,7 +3629,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
-        var _this5$document, name, status, description, body, formData, _iterator, _step, pair, endpoint, headers, response;
+        var _this5$document, name, status, description, access_role, access_dept, body, formData, _iterator, _step, pair, endpoint, headers, response;
 
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
@@ -3615,11 +3639,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 _this5.loading = true;
                 _context3.prev = 2;
-                _this5$document = _this5.document, name = _this5$document.name, status = _this5$document.status, description = _this5$document.description;
+                _this5$document = _this5.document, name = _this5$document.name, status = _this5$document.status, description = _this5$document.description, access_role = _this5$document.access_role, access_dept = _this5$document.access_dept;
                 body = {
                   name: name,
                   file: _this5.document.file,
                   status: status,
+                  access_role: access_role,
+                  access_dept: access_dept,
                   description: description,
                   tag_id: JSON.stringify(_this5.tag.value),
                   _method: "PUT"
@@ -4291,6 +4317,34 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -4299,7 +4353,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         name: "",
         status: "PENDING",
         description: "",
-        file: ""
+        file: "",
+        access_role: "2",
+        access_dept: "1"
       },
       tag: {
         value: [],
@@ -49510,6 +49566,141 @@ var render = function() {
                 : _vm._e()
             ]),
             _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c(
+                "div",
+                {
+                  class: [
+                    _vm.document.access_role == 1 ? "col-sm-12" : "col-sm-6"
+                  ]
+                },
+                [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c(
+                      "label",
+                      { staticClass: "col-from-label", attrs: { for: "role" } },
+                      [_vm._v("Access")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "select",
+                      {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.document.access_role,
+                            expression: "document.access_role"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { name: "role", id: "role" },
+                        on: {
+                          change: function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.$set(
+                              _vm.document,
+                              "access_role",
+                              $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            )
+                          }
+                        }
+                      },
+                      [
+                        _vm.$root.$data.authUser.role == "1"
+                          ? _c("option", { attrs: { value: "1" } }, [
+                              _vm._v("Admin")
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "2" } }, [
+                          _vm._v("Manager")
+                        ]),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "3" } }, [
+                          _vm._v("Staff")
+                        ])
+                      ]
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _vm.document.access_role != 1
+                ? _c(
+                    "div",
+                    {
+                      class: [_vm.document.access_role != 1 ? "col-sm-6" : ""]
+                    },
+                    [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c(
+                          "label",
+                          {
+                            staticClass: "col-from-label",
+                            attrs: { for: "dept" }
+                          },
+                          [_vm._v("Departement")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.document.access_dept,
+                                expression: "document.access_dept"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { name: "dept", id: "dept" },
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.document,
+                                  "access_dept",
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              }
+                            }
+                          },
+                          [
+                            _c("option", { attrs: { value: "1" } }, [
+                              _vm._v("Departement 1")
+                            ]),
+                            _vm._v(" "),
+                            _c("option", { attrs: { value: "2" } }, [
+                              _vm._v("Departement 2")
+                            ])
+                          ]
+                        )
+                      ])
+                    ]
+                  )
+                : _vm._e()
+            ]),
+            _vm._v(" "),
             _c(
               "div",
               { staticClass: "form-group" },
@@ -49591,11 +49782,11 @@ var render = function() {
                   "label",
                   { staticClass: "custom-file-label", attrs: { for: "file" } },
                   [_vm._v("Choose file...")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "invalid-feedback" }, [
-                  _vm._v("file tidak boleh kosong")
-                ])
+                )
+              ]),
+              _vm._v(" "),
+              _c("small", [
+                _vm._v("Biarkan kosong jika tidak ingin update file.")
               ])
             ]),
             _vm._v(" "),
@@ -50471,7 +50662,7 @@ var render = function() {
                     }),
                     _vm._v(" "),
                     _c("div", { staticClass: "invalid-feedback" }, [
-                      _vm._v("email tidak boleh kosong!")
+                      _vm._v("Nama tidak boleh kosong!")
                     ])
                   ])
                 ]
@@ -50545,8 +50736,143 @@ var render = function() {
                         ),
                         _vm._v(" "),
                         _c("div", { staticClass: "invalid-feedback" }, [
-                          _vm._v("email tidak boleh kosong!")
+                          _vm._v("Status tidak boleh kosong!")
                         ])
+                      ])
+                    ]
+                  )
+                : _vm._e()
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c(
+                "div",
+                {
+                  class: [
+                    _vm.document.access_role == 1 ? "col-sm-12" : "col-sm-6"
+                  ]
+                },
+                [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c(
+                      "label",
+                      { staticClass: "col-from-label", attrs: { for: "role" } },
+                      [_vm._v("Access")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "select",
+                      {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.document.access_role,
+                            expression: "document.access_role"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { name: "role", id: "role" },
+                        on: {
+                          change: function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.$set(
+                              _vm.document,
+                              "access_role",
+                              $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            )
+                          }
+                        }
+                      },
+                      [
+                        _vm.$root.$data.authUser.role == "1"
+                          ? _c("option", { attrs: { value: "1" } }, [
+                              _vm._v("Admin")
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "2" } }, [
+                          _vm._v("Manager")
+                        ]),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "3" } }, [
+                          _vm._v("Staff")
+                        ])
+                      ]
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _vm.document.access_role != 1
+                ? _c(
+                    "div",
+                    {
+                      class: [_vm.document.access_role != 1 ? "col-sm-6" : ""]
+                    },
+                    [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c(
+                          "label",
+                          {
+                            staticClass: "col-from-label",
+                            attrs: { for: "dept" }
+                          },
+                          [_vm._v("Departement")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.document.access_dept,
+                                expression: "document.access_dept"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { name: "dept", id: "dept" },
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.document,
+                                  "access_dept",
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              }
+                            }
+                          },
+                          [
+                            _c("option", { attrs: { value: "1" } }, [
+                              _vm._v("Departement 1")
+                            ]),
+                            _vm._v(" "),
+                            _c("option", { attrs: { value: "2" } }, [
+                              _vm._v("Departement 2")
+                            ])
+                          ]
+                        )
                       ])
                     ]
                   )
@@ -50611,7 +50937,11 @@ var render = function() {
                     _vm.$set(_vm.document, "description", $event.target.value)
                   }
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c("div", { staticClass: "invalid-feedback" }, [
+                _vm._v("Deskripsi tidak boleh kosong!")
+              ])
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group" }, [
@@ -50633,7 +50963,17 @@ var render = function() {
                 _c(
                   "label",
                   { staticClass: "custom-file-label", attrs: { for: "file" } },
-                  [_vm._v("Choose file...")]
+                  [
+                    _vm._v(
+                      _vm._s(
+                        _vm.document &&
+                          _vm.document.file &&
+                          _vm.document.file.name
+                          ? _vm.document.file.name
+                          : "Choose file..."
+                      )
+                    )
+                  ]
                 ),
                 _vm._v(" "),
                 _c("div", { staticClass: "invalid-feedback" }, [

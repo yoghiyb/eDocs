@@ -45,6 +45,30 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div :class="[ document.access_role == 1 ? 'col-sm-12' : 'col-sm-6' ]">
+              <div class="form-group">
+                <label for="role" class="col-from-label">Access</label>
+                <select name="role" id="role" class="form-control" v-model="document.access_role">
+                  <option v-if="$root.$data.authUser.role == '1'" value="1">Admin</option>
+                  <option value="2">Manager</option>
+                  <option value="3">Staff</option>
+                </select>
+              </div>
+            </div>
+            <div
+              v-if="document.access_role != 1"
+              :class="[document.access_role != 1 ? 'col-sm-6' : '']"
+            >
+              <div class="form-group">
+                <label for="dept" class="col-from-label">Departement</label>
+                <select name="dept" id="dept" class="form-control" v-model="document.access_dept">
+                  <option value="1">Departement 1</option>
+                  <option value="2">Departement 2</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <div class="form-group">
             <label for="tags">Tag</label>
             <multiselect
@@ -82,8 +106,8 @@
                 @change="selectFile"
               />
               <label class="custom-file-label" for="file">Choose file...</label>
-              <div class="invalid-feedback">file tidak boleh kosong</div>
             </div>
+            <small>Biarkan kosong jika tidak ingin update file.</small>
           </div>
           <button
             class="float-right btn btn-primary"
@@ -179,12 +203,20 @@ export default {
       this.$Progress.start();
       this.loading = true;
       try {
-        let { name, status, description } = this.document;
+        let {
+          name,
+          status,
+          description,
+          access_role,
+          access_dept,
+        } = this.document;
 
         let body = {
           name: name,
           file: this.document.file,
           status: status,
+          access_role: access_role,
+          access_dept: access_dept,
           description: description,
           tag_id: JSON.stringify(this.tag.value),
           _method: "PUT",

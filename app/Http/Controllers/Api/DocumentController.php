@@ -105,7 +105,16 @@ class DocumentController extends Controller
 
             // query filter dokumen dengan status 'APPROVED'
             $document = Document::orderBy($request->column, $request->direction)
-                ->where('status', 'APPROVED')
+                // pengecekan kondisi user
+                ->where(function ($query) {
+                    // jika user bukan admin
+                    if (Auth::user()->role != '1') {
+                        $query->where(['status' => 'APPROVED', 'access_role' => Auth::user()->role, 'access_dept' => Auth::user()->dept_id]);
+                    } else {
+                        // jika user admin
+                        $query->where('status', 'APPROVED');
+                    }
+                })
                 ->where(function ($query) use ($request, $operators, $special_column, $document_tag) {
                     // jika request search input tidak kosong
                     if ($request->search_input != '') {
@@ -156,7 +165,7 @@ class DocumentController extends Controller
 
             return response()->json([
                 'model' => $document,
-                'columns' => $columns
+                'columns' => $columns,
             ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
@@ -202,6 +211,8 @@ class DocumentController extends Controller
             'file' => 'required|file|max:5000|mimes:pdf,doc,docx,jpeg,png,jpg,gif',
             'created_by' => 'required|integer',
             'status' => 'required|string|in:PENDING,APPROVED',
+            'access_role' => 'required',
+            'access_dept' => 'required',
             'description' => 'required',
             'tag_id' => 'required|string|min:1'
         ]);
@@ -223,6 +234,11 @@ class DocumentController extends Controller
 
             // ambil nama file
             $document['file'] = basename($filePath);
+
+            if ($request->status == 'APPROVED') {
+                $document['approved_by'] = Auth::user()->id;
+                $document['approved_at'] = now();
+            }
 
             // simpan dokumen
             $saved_document = Document::create($document);
@@ -419,6 +435,8 @@ class DocumentController extends Controller
             'name' => 'required|string|max:255',
             'file' => 'sometimes|nullable|file|max:5000|mimes:pdf,doc,docx,jpeg,png,jpg,gif',
             'status' => 'required|string|in:PENDING,APPROVED',
+            'access_role' => 'required',
+            'access_dept' => 'required',
             'description' => 'required',
             'tag_id' => 'required|string|min:1'
         ]);

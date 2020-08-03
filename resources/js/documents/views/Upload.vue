@@ -22,7 +22,7 @@
                   required
                   v-model="document.name"
                 />
-                <div class="invalid-feedback">email tidak boleh kosong!</div>
+                <div class="invalid-feedback">Nama tidak boleh kosong!</div>
               </div>
             </div>
             <div
@@ -41,7 +41,31 @@
                   <option value="PENDING">PENDING</option>
                   <option value="APPROVED">APPROVED</option>
                 </select>
-                <div class="invalid-feedback">email tidak boleh kosong!</div>
+                <div class="invalid-feedback">Status tidak boleh kosong!</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div :class="[ document.access_role == 1 ? 'col-sm-12' : 'col-sm-6' ]">
+              <div class="form-group">
+                <label for="role" class="col-from-label">Access</label>
+                <select name="role" id="role" class="form-control" v-model="document.access_role">
+                  <option v-if="$root.$data.authUser.role == '1'" value="1">Admin</option>
+                  <option value="2">Manager</option>
+                  <option value="3">Staff</option>
+                </select>
+              </div>
+            </div>
+            <div
+              v-if="document.access_role != 1"
+              :class="[document.access_role != 1 ? 'col-sm-6' : '']"
+            >
+              <div class="form-group">
+                <label for="dept" class="col-from-label">Departement</label>
+                <select name="dept" id="dept" class="form-control" v-model="document.access_dept">
+                  <option value="1">Departement 1</option>
+                  <option value="2">Departement 2</option>
+                </select>
               </div>
             </div>
           </div>
@@ -68,6 +92,7 @@
               class="form-control"
               v-model="document.description"
             ></textarea>
+            <div class="invalid-feedback">Deskripsi tidak boleh kosong!</div>
           </div>
           <div class="form-group">
             <label for="file">File</label>
@@ -81,7 +106,10 @@
                 accept=".xlsx, .xls, image/*, .doc, .docx, .pdf"
                 @change="selectFile"
               />
-              <label class="custom-file-label" for="file">Choose file...</label>
+              <label
+                class="custom-file-label"
+                for="file"
+              >{{ document && document.file && document.file.name ? document.file.name : 'Choose file...' }}</label>
               <div class="invalid-feedback">file tidak boleh kosong</div>
             </div>
           </div>
@@ -107,6 +135,8 @@ export default {
         status: "PENDING",
         description: "",
         file: "",
+        access_role: "2",
+        access_dept: "1",
       },
       tag: {
         value: [],

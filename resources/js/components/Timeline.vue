@@ -127,15 +127,15 @@ export default {
           if (item.user == null) {
             return `<a href="/user/${item.user_id}/detail" >${
               item.user_data.username
-            }</a> memperbarui user <a href="/user/${after.id}/detail" >${
+            }</a> memperbarui user ${
               after.username == before.username
-                ? `${before.username} menjadi ${after.username}`
-                : `${after.username}`
-            }</a> (DIHAPUS) `;
+                ? `${before.username} menjadi <a href="/user/${after.id}/detail" >${after.username}</a>`
+                : `<a href="/user/${after.id}/detail" >${after.username}</a>`
+            } (DIHAPUS) `;
           }
           return `<a href="/user/${item.user_id}/detail" >${
             item.user_data.username
-          }</a> memperbarui file <a href="/user/${after.id}/detail" >${
+          }</a> memperbarui user <a href="/user/${after.id}/detail" >${
             item.user && item.user.username
           }</a>`;
         }

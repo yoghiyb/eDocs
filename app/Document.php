@@ -18,7 +18,7 @@ class Document extends Model
     ];
 
     protected $fillable = [
-        'name', 'file', 'created_by', 'status', 'description'
+        'name', 'file', 'created_by', 'status', 'access_role', 'access_dept', 'description', 'approved_by', 'approved_at'
     ];
 
     public function user()
