@@ -2907,7 +2907,7 @@ __webpack_require__.r(__webpack_exports__);
             return "<a href=\"/user/".concat(item.user_id, "/detail\" >").concat(item.user_data.username, "</a> membuat tag ").concat(_after4.name, " (DIHAPUS)");
           }
 
-          return "<a href=\"/user/".concat(item.user_id, "/detail\" >").concat(item.user_data.username, "</a> membuat tag ").concat(tag.name);
+          return "<a href=\"/user/".concat(item.user_id, "/detail\" >").concat(item.user_data.username, "</a> membuat tag ").concat(item.tag.name);
         }
 
         if (item.action == "delete") {
@@ -4127,67 +4127,98 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var endpoint = "".concat(BASE_URL, "/document/download/").concat(file.file);
       axios.get(endpoint, {
         responseType: "blob"
-      }).then(function (response) {
-        var mime = file.file.split(".")[1];
-        var blob;
+      }).then( /*#__PURE__*/function () {
+        var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(response) {
+          var mime, blob, url, link;
+          return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  mime = file.file.split(".")[1];
 
-        if (type != "pdf") {
-          blob = new Blob([response.data]);
-        } else {
-          blob = new Blob([response.data], {
-            type: "application/pdf"
-          });
-        }
+                  if (type != "pdf") {
+                    blob = new Blob([response.data]);
+                  } else {
+                    blob = new Blob([response.data], {
+                      type: "application/pdf"
+                    });
+                  }
 
-        var url = window.URL.createObjectURL(blob);
-        var link = document.createElement("a");
-        link.download = type == "pdf" ? "".concat(file.name, ".pdf") : "".concat(file.name, ".").concat(mime); // link.download = `file.pdf`;
+                  url = window.URL.createObjectURL(blob); //   console.log(await this.base64(blob));
 
-        link.href = url;
-        link.click();
+                  link = document.createElement("a");
+                  link.download = type == "pdf" ? "".concat(file.name, ".pdf") : "".concat(file.name, ".").concat(mime);
+                  link.href = url;
+                  link.click();
 
-        _this2.$Progress.finish();
-      })["catch"](function (error) {
+                  _this2.$Progress.finish();
+
+                case 8:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee);
+        }));
+
+        return function (_x) {
+          return _ref.apply(this, arguments);
+        };
+      }())["catch"](function (error) {
         console.log(error);
 
         _this2.$Progress.fail();
       });
     },
+    base64: function base64(file) {
+      return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = function () {
+          return resolve(reader.result);
+        };
+
+        reader.onerror = function (error) {
+          return reject(error);
+        };
+      });
+    },
     getTotalPendingDocuments: function getTotalPendingDocuments() {
       var _this3 = this;
 
-      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
         var endpoint, response;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                _context.prev = 0;
+                _context2.prev = 0;
                 endpoint = "".concat(BASE_URL, "/pending/total");
-                _context.next = 4;
+                _context2.next = 4;
                 return axios.get(endpoint);
 
               case 4:
-                response = _context.sent;
+                response = _context2.sent;
 
                 if (response.status == 200) {
                   _this3.totalPending = response.data;
                 }
 
-                _context.next = 11;
+                _context2.next = 11;
                 break;
 
               case 8:
-                _context.prev = 8;
-                _context.t0 = _context["catch"](0);
-                console.log(_context.t0);
+                _context2.prev = 8;
+                _context2.t0 = _context2["catch"](0);
+                console.log(_context2.t0);
 
               case 11:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, null, [[0, 8]]);
+        }, _callee2, null, [[0, 8]]);
       }))();
     }
   }

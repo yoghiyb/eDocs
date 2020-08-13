@@ -18,8 +18,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-use function PHPSTORM_META\map;
-
 class DocumentController extends Controller
 {
     public function index()
@@ -381,7 +379,7 @@ class DocumentController extends Controller
     }
 
     // fungsi untuk download file
-    public function download($file_name)
+    public function download(Request $request, $file_name)
     {
         try {
             // ambil mime tipe file
@@ -398,6 +396,29 @@ class DocumentController extends Controller
                 'Content-Disposition' => "attachment; filename={$file_name}",
                 'Content-Transfer-Encoding' => 'binary',
             ];
+
+            if ($request->convert_to == 'pdf') {
+                $get_mime = explode('.', $file_name)[1];
+                $file_path = Storage::disk('s3')->response('uploads/' . $file_name);
+                $filePathPdf = public_path() . "/pdf_file/" . $file_name;
+                if ($get_mime == 'docx' || $get_mime == 'doc') {
+
+                    // $domPdfPath = base_path('vendor/dompdf/dompdf');
+                    // \PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
+                    // \PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
+
+                    // $phpWord =  \PhpOffice\PhpWord\IOFactory::load($file_path, 'MsDoc');
+                    // $pdfWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'PDF');
+                    // $pdfWriter->save($filePathPdf);
+                }
+                if ($get_mime == 'xls' || $get_mime == 'xlsx') {
+
+                    // $phpWord_xls = \PhpOffice\PhpSpreadsheet\IOFactory::load($file_path);
+                    // $objWriter = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($phpWord_xls, 'Dompdf');
+                    // $objWriter->save($filePathPdf);
+                }
+                return response()->json(['doc' => $file_path], 200);
+            }
 
             ob_end_clean();
 

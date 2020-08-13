@@ -376,24 +376,23 @@ export default {
       let endpoint = `${BASE_URL}/document/download/${file.file}`;
       axios
         .get(endpoint, { responseType: "blob" })
-        .then((response) => {
+        .then(async (response) => {
           const mime = file.file.split(".")[1];
           var blob;
-
           if (type != "pdf") {
             blob = new Blob([response.data]);
           } else {
             blob = new Blob([response.data], { type: "application/pdf" });
           }
-
           const url = window.URL.createObjectURL(blob);
+
+          //   console.log(await this.base64(blob));
           const link = document.createElement("a");
 
           link.download =
             type == "pdf" ? `${file.name}.pdf` : `${file.name}.${mime}`;
-          // link.download = `file.pdf`;
-          link.href = url;
 
+          link.href = url;
           link.click();
 
           this.$Progress.finish();
@@ -402,6 +401,14 @@ export default {
           console.log(error);
           this.$Progress.fail();
         });
+    },
+    base64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
     },
     async getTotalPendingDocuments() {
       try {

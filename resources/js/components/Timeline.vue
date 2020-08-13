@@ -150,7 +150,7 @@ export default {
           if (item.tag == null) {
             return `<a href="/user/${item.user_id}/detail" >${item.user_data.username}</a> membuat tag ${after.name} (DIHAPUS)`;
           }
-          return `<a href="/user/${item.user_id}/detail" >${item.user_data.username}</a> membuat tag ${tag.name}`;
+          return `<a href="/user/${item.user_id}/detail" >${item.user_data.username}</a> membuat tag ${item.tag.name}`;
         }
         if (item.action == "delete") {
           let oldTag = JSON.parse(item.before);
